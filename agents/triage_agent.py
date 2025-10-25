@@ -280,15 +280,20 @@ class AroviaTriageAgent:
             # Convert to FacilityInfo objects
             facilities = []
             for facility_data in facilities_data:
-                facility = FacilityInfo(
-                    name=facility_data["name"],
-                    address=facility_data["address"],
-                    distance_km=facility_data["distance_km"],
-                    specialty=facility_data["specialty_match"],
-                    services=facility_data["services"],
-                    contact=facility_data["contact"],
-                    map_link=facility_data["map_link"]
-                )
+                # Handle both dict and FacilityInfo objects
+                if isinstance(facility_data, dict):
+                    facility = FacilityInfo(
+                        name=facility_data["name"],
+                        address=facility_data["address"],
+                        distance_km=facility_data["distance_km"],
+                        specialty=facility_data["specialty_match"],
+                        services=facility_data["services"],
+                        contact=facility_data.get("contact"),
+                        map_link=facility_data["map_link"]
+                    )
+                else:
+                    # Already a FacilityInfo object
+                    facility = facility_data
                 facilities.append(facility)
             
             # Sort by distance and filter by urgency

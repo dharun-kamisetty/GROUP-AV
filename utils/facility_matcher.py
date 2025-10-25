@@ -371,7 +371,7 @@ class FacilityMatcher:
         user_location: str,
         specialty: str,
         radius_km: float = 10.0
-    ) -> List[FacilityInfo]:
+    ) -> List[Dict[str, Any]]:
         """
         Find facilities for a specific medical condition
         
@@ -381,7 +381,7 @@ class FacilityMatcher:
             radius_km: Search radius in kilometers
             
         Returns:
-            List of recommended facilities
+            List of facility data dictionaries
         """
         try:
             # Geocode user location
@@ -396,21 +396,7 @@ class FacilityMatcher:
                 latitude, longitude, radius_km, specialty
             )
             
-            # Convert to FacilityInfo objects
-            facilities = []
-            for facility_data in facilities_data:
-                facility = FacilityInfo(
-                    name=facility_data["name"],
-                    address=facility_data["address"],
-                    distance_km=facility_data["distance_km"],
-                    specialty=facility_data["specialty_match"],
-                    services=facility_data["services"],
-                    contact=facility_data["contact"],
-                    map_link=facility_data["map_link"]
-                )
-                facilities.append(facility)
-            
-            return facilities
+            return facilities_data
             
         except Exception as e:
             print(f"Error finding facilities: {e}")
@@ -422,7 +408,7 @@ def find_nearby_clinics(
     location: str,
     specialty: str = "general",
     radius_km: float = 10.0
-) -> List[FacilityInfo]:
+) -> List[Dict[str, Any]]:
     """
     Quick function to find nearby clinics
     
@@ -432,7 +418,7 @@ def find_nearby_clinics(
         radius_km: Search radius in kilometers
         
     Returns:
-        List of nearby facilities
+        List of nearby facility data
     """
     matcher = FacilityMatcher()
     return matcher.find_facilities_for_condition(location, specialty, radius_km)
@@ -456,9 +442,9 @@ if __name__ == "__main__":
     
     print(f"Found {len(facilities)} facilities:")
     for i, facility in enumerate(facilities, 1):
-        print(f"{i}. {facility.name}")
-        print(f"   Distance: {facility.distance_km} km")
-        print(f"   Specialty: {facility.specialty}")
-        print(f"   Services: {', '.join(facility.services)}")
-        print(f"   Map: {facility.map_link}")
+        print(f"{i}. {facility['name']}")
+        print(f"   Distance: {facility['distance_km']} km")
+        print(f"   Specialty: {facility['specialty_match']}")
+        print(f"   Services: {', '.join(facility['services'])}")
+        print(f"   Map: {facility['map_link']}")
         print()
