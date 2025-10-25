@@ -1,0 +1,39 @@
+{
+  "compilerOptions": {
+    "target": "ES2020",
+    "useDefineForClassFields": true,
+    "lib": ["ES2020", "DOM", "DOM.Iterable"],
+    "module": "ESNext",
+    "skipLibCheck": true,
+
+    /* Bundler mode */
+    "moduleResolution": "bundler",
+    "allowImportingTsExtensions": true,
+    "resolveJsonModule": true,
+    "isolatedModules": true,
+    "noEmit": true,
+    "jsx": "react-jsx",
+
+    /* Linting */
+    "strict": true,
+    "noUnusedLocals": true,
+    "noUnusedParameters": true,
+    "noFallthroughCasesInSwitch": true,
+
+    /* Path mapping */
+    "baseUrl": "../hackathon-oct-2025/arovia-frontend",
+    "paths": {
+      "@/*": ["../hackathon-oct-2025/arovia-frontend/src/*"],
+      "@/components/*": ["../hackathon-oct-2025/arovia-frontend/src/components/*"],
+      "@/pages/*": ["../hackathon-oct-2025/arovia-frontend/src/pages/*"],
+      "@/services/*": ["../hackathon-oct-2025/arovia-frontend/src/services/*"],
+      "@/store/*": ["../hackathon-oct-2025/arovia-frontend/src/store/*"],
+      "@/types/*": ["../hackathon-oct-2025/arovia-frontend/src/types/*"],
+      "@/utils/*": ["../hackathon-oct-2025/arovia-frontend/src/utils/*"],
+      "@/i18n/*": ["../hackathon-oct-2025/arovia-frontend/src/i18n/*"],
+      "@/hooks/*": ["../hackathon-oct-2025/arovia-frontend/src/hooks/*"]
+    }
+  },
+  "include": ["../hackathon-oct-2025/arovia-frontend/src"],
+  "references": [{ "path": "./tsconfig.node.json" }]
+}

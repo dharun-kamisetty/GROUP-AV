@@ -1,0 +1,156 @@
+{
+  "app": {
+    "title": "Arovia - AI Health Desk Agent",
+    "subtitle": "Intelligent triage assistant revolutionizing first-point healthcare access in India",
+    "loading": "Loading...",
+    "error": "Error",
+    "success": "Success",
+    "retry": "Retry",
+    "cancel": "Cancel",
+    "close": "Close",
+    "save": "Save",
+    "clear": "Clear"
+  },
+  "navigation": {
+    "home": "Home",
+    "triage": "Symptom Analysis",
+    "voice": "Voice Input",
+    "results": "Results",
+    "facilities": "Find Facilities",
+    "history": "History",
+    "settings": "Settings",
+    "about": "About"
+  },
+  "language": {
+    "selector": "Language",
+    "english": "English",
+    "hindi": "Hindi",
+    "telugu": "Telugu",
+    "tamil": "Tamil",
+    "kannada": "Kannada",
+    "malayalam": "Malayalam"
+  },
+  "location": {
+    "title": "Your Location",
+    "subtitle": "Get your location for nearby clinic recommendations",
+    "detectButton": "Detect My Location",
+    "manualEntry": "Enter Manually",
+    "placeholder": "Enter your city, area, or address",
+    "useLocation": "Use This Location",
+    "backToAuto": "Back to Auto Detection",
+    "detected": "Location detected",
+    "changeLocation": "Change Location",
+    "permission": {
+      "requesting": "Requesting location access...",
+      "allow": "Please allow location access in your browser",
+      "denied": "Location access denied. Please allow location access or enter manually.",
+      "unavailable": "Location information unavailable",
+      "timeout": "Location request timed out",
+      "unsupported": "Geolocation is not supported by this browser"
+    }
+  },
+  "voice": {
+    "title": "Voice Input",
+    "subtitle": "Record your symptoms in your preferred language",
+    "selectLanguage": "Select Language",
+    "duration": "Recording Duration (seconds)",
+    "startRecording": "Start Recording",
+    "stopRecording": "Stop Recording",
+    "recording": "Recording... Please speak now...",
+    "processing": "Processing your voice input...",
+    "completed": "Recording and analysis completed!",
+    "error": "Error during recording",
+    "notSupported": "Audio recording is not supported in this browser",
+    "transcribed": "Transcribed Text",
+    "confidence": "Confidence",
+    "language": "Detected Language"
+  },
+  "triage": {
+    "title": "Symptom Analysis",
+    "subtitle": "Describe your symptoms for AI-powered medical triage",
+    "inputPlaceholder": "Describe your symptoms in detail... (e.g., I have been experiencing chest pain for 2 hours, with shortness of breath)",
+    "analyzeButton": "Analyze Symptoms",
+    "analyzing": "Analyzing your symptoms...",
+    "result": {
+      "title": "Triage Assessment Result",
+      "chiefComplaint": "Chief Complaint",
+      "symptoms": "Identified Symptoms",
+      "urgencyScore": "Urgency Score",
+      "category": "Triage Category",
+      "emergency": "Emergency Detected",
+      "action": "Recommended Action",
+      "specialty": "Recommended Specialty",
+      "redFlags": "Red Flags",
+      "risks": "Potential Risks",
+      "timestamp": "Assessment Time"
+    },
+    "categories": {
+      "immediate": "Immediate",
+      "urgent": "Urgent",
+      "standard": "Standard"
+    },
+    "severity": {
+      "mild": "Mild",
+      "moderate": "Moderate",
+      "severe": "Severe"
+    }
+  },
+  "facilities": {
+    "title": "Recommended Facilities",
+    "subtitle": "Based on your assessment and location",
+    "notFound": "No facilities found in your area",
+    "distance": "Distance",
+    "services": "Services",
+    "contact": "Contact",
+    "directions": "Get Directions",
+    "emergency": "Emergency Services",
+    "searchRadius": "Search Radius (km)"
+  },
+  "referral": {
+    "title": "Referral Note",
+    "subtitle": "Medical-grade documentation for healthcare providers",
+    "patientId": "Patient ID",
+    "generatedAt": "Generated At",
+    "download": "Download Note",
+    "print": "Print Note",
+    "share": "Share Note",
+    "disclaimer": {
+      "title": "Medical Disclaimer",
+      "content": "Arovia is a triage support tool and does NOT provide medical diagnoses or treatment recommendations. This assessment is based on symptom information provided and should not replace consultation with qualified healthcare professionals. In case of emergency, call 108 immediately."
+    }
+  },
+  "tts": {
+    "readAloud": "Read Aloud",
+    "pause": "Pause",
+    "resume": "Resume",
+    "stop": "Stop",
+    "notSupported": "Text-to-speech is not supported in this browser"
+  },
+  "theme": {
+    "light": "Light Mode",
+    "dark": "Dark Mode",
+    "toggle": "Toggle Theme"
+  },
+  "emergency": {
+    "detected": "EMERGENCY DETECTED",
+    "call108": "Call 108 Immediately",
+    "doNotDrive": "Do NOT drive yourself",
+    "nearestER": "Go to nearest Emergency Room",
+    "warning": "This appears to be a medical emergency. Seek immediate medical attention."
+  },
+  "errors": {
+    "generic": "An unexpected error occurred",
+    "network": "Network connection error",
+    "server": "Server error",
+    "validation": "Please check your input",
+    "permission": "Permission denied",
+    "notFound": "Not found",
+    "timeout": "Request timed out"
+  },
+  "form": {
+    "required": "This field is required",
+    "invalid": "Invalid input",
+    "tooShort": "Input is too short",
+    "tooLong": "Input is too long"
+  }
+}
