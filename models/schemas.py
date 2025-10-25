@@ -57,6 +57,12 @@ class VoiceInput(BaseModel):
     processing_time: float = Field(description="Processing time in seconds")
 
 
+class MedicalRelevance(BaseModel):
+    """Schema for checking medical relevance of a text"""
+    is_relevant: bool = Field(description="Whether the text is medically relevant")
+    reason: str = Field(description="Reason for the relevance decision")
+
+
 class FacilityInfo(BaseModel):
     """Healthcare facility information"""
     name: str = Field(description="Facility name")
