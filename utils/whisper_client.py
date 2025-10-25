@@ -39,7 +39,7 @@ class WhisperClient:
         "maithili": "mai",
         "santali": "sat"
     }
-    
+    # def __init__(self, model_size: str = "small"):
     def __init__(self, model_size: str = "large-v3"):
         """
         Initialize Whisper client
@@ -185,6 +185,7 @@ class WhisperClient:
 def transcribe_voice_input(
     language: Optional[str] = None,
     duration: float = 10.0,
+    # model_size: str = "small",
     model_size: str = "large-v3"
 ) -> VoiceInput:
     """
