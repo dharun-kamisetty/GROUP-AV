@@ -1,7 +1,14 @@
 """
 Whisper-Large integration for speech-to-text with 22 Indic languages support
 """
-import whisper
+try:
+    import whisper
+    WHISPER_AVAILABLE = True
+except ImportError as e:
+    print(f"Warning: Whisper not available: {e}")
+    WHISPER_AVAILABLE = False
+    whisper = None
+
 import sounddevice as sd
 import numpy as np
 import tempfile
@@ -53,13 +60,18 @@ class WhisperClient:
     
     def _load_model(self):
         """Load Whisper model"""
+        if not WHISPER_AVAILABLE:
+            print("Warning: Whisper is not available. Voice input will be disabled.")
+            self.model = None
+            return
+            
         try:
             print(f"Loading Whisper {self.model_size} model...")
             self.model = whisper.load_model(self.model_size)
             print("Whisper model loaded successfully!")
         except Exception as e:
             print(f"Error loading Whisper model: {e}")
-            raise
+            self.model = None
     
     def record_audio(self, duration: float = 10.0, sample_rate: int = 16000) -> str:
         """
@@ -122,6 +134,16 @@ class WhisperClient:
             VoiceInput object with transcription results
         """
         start_time = time.time()
+        
+        if not WHISPER_AVAILABLE or self.model is None:
+            # Return a mock result when whisper is not available
+            return VoiceInput(
+                audio_file_path=audio_file_path,
+                transcribed_text="[Voice input not available - Whisper not installed]",
+                language=language or "en",
+                confidence=0.0,
+                processing_time=time.time() - start_time
+            )
         
         try:
             if not os.path.exists(audio_file_path):
