@@ -149,8 +149,15 @@ def display_location_input():
         if st.button("🔄 Change Location"):
             st.session_state.user_location = ""
             st.session_state.user_coordinates = None
+            st.session_state.location_processed = False
+            if 'location_coords' in st.session_state:
+                del st.session_state.location_coords
             st.rerun()
         return st.session_state.user_location
+    
+    # Show processing status if coordinates are being processed
+    if 'location_coords' in st.session_state and not st.session_state.get('location_processed', False):
+        st.info("🔄 Processing your location... Please wait.")
     
     # Location detection options
     st.markdown("**🌍 Get Your Location for Nearby Clinic Recommendations**")
@@ -163,17 +170,18 @@ def display_location_input():
         st.markdown("Allow location access for instant nearby clinic recommendations")
         
         if st.button("🌍 Detect My Location", type="primary", use_container_width=True):
+            # Clear any existing location data
+            if 'location_coords' in st.session_state:
+                del st.session_state.location_coords
+            if 'location_processed' in st.session_state:
+                st.session_state.location_processed = False
+            
             st.info("🌍 Requesting location access... Please allow location access in your browser.")
             
             # JavaScript for geolocation
             location_js = """
             <script>
             function getLocation() {
-                // Check if location is already stored
-                if (sessionStorage.getItem('arovia_lat') && sessionStorage.getItem('arovia_lon')) {
-                    return; // Already have location
-                }
-                
                 if (navigator.geolocation) {
                     navigator.geolocation.getCurrentPosition(
                         function(position) {
@@ -185,7 +193,7 @@ def display_location_input():
                             sessionStorage.setItem('arovia_lon', lon);
                             
                             // Show success message
-                            alert('Location detected! Processing...');
+                            alert('Location detected! Coordinates: ' + lat.toFixed(4) + ', ' + lon.toFixed(4));
                             
                             // Reload page to process coordinates
                             window.location.reload();
@@ -207,7 +215,7 @@ def display_location_input():
                         },
                         {
                             enableHighAccuracy: true,
-                            timeout: 10000,
+                            timeout: 15000,
                             maximumAge: 300000
                         }
                     );
@@ -264,6 +272,8 @@ def display_location_input():
             const lon = sessionStorage.getItem('arovia_lon');
             
             if (lat && lon) {
+                console.log('Found stored coordinates:', lat, lon);
+                
                 // Clear the stored coordinates
                 sessionStorage.removeItem('arovia_lat');
                 sessionStorage.removeItem('arovia_lon');
@@ -274,10 +284,12 @@ def display_location_input():
                     key: 'location_coords',
                     value: {lat: parseFloat(lat), lon: parseFloat(lon)}
                 }, '*');
+            } else {
+                console.log('No stored coordinates found');
             }
         }
         
-        // Check for stored coordinates only once
+        // Check for stored coordinates
         checkStoredLocation();
         </script>
         """
