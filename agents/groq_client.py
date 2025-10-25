@@ -288,6 +288,84 @@ Respond ONLY with valid JSON. No additional text or explanations.
             }
 
 
+class MedicalRelevanceAgent:
+    """Agent to check for medical relevance in a given text"""
+    
+    def __init__(self, groq_client: GroqClient):
+        """
+        Initialize medical relevance agent
+        
+        Args:
+            groq_client: Initialized GroqClient instance
+        """
+        self.groq_client = groq_client
+        self.llm = groq_client.llm
+    
+    def create_relevance_prompt(self, text: str) -> str:
+        """
+        Create prompt to check for medical relevance
+        
+        Args:
+            text: The text to analyze
+            
+        Returns:
+            Formatted prompt for relevance check
+        """
+        prompt = f"""
+You are a medical relevance classification assistant. Your task is to determine if the following text contains any information related to health, symptoms, or medical conditions. The user may be trying to describe a health problem.
+
+TEXT: "{text}"
+
+Is this text medically relevant? Respond with ONLY a JSON object in the following format:
+
+{{
+    "is_relevant": true/false,
+    "reason": "brief explanation for your decision"
+}}
+
+Examples:
+- "I have a headache" -> {{"is_relevant": true, "reason": "Mentions a common medical symptom."}}
+- "What is the weather today?" -> {{"is_relevant": false, "reason": "This is a general question, not related to health."}}
+- "My car is broken" -> {{"is_relevant": false, "reason": "This is about a car, not a person's health."}}
+- "I feel sad and tired all the time" -> {{"is_relevant": true, "reason": "Describes symptoms related to mental and physical health."}}
+
+Respond ONLY with the JSON object.
+"""
+        return prompt
+    
+    def check_relevance(self, text: str) -> Dict[str, Any]:
+        """
+        Check if the text is medically relevant
+        
+        Args:
+            text: The text to analyze
+            
+        Returns:
+            Dictionary with relevance information
+        """
+        try:
+            # Create relevance prompt
+            prompt = self.create_relevance_prompt(text)
+            
+            # Get response from Llama 3.3 70B
+            response = self.llm.invoke(prompt)
+            
+            # Parse JSON response
+            try:
+                content = response.content.strip()
+                result = json.loads(content)
+                return result
+            except json.JSONDecodeError as e:
+                print(f"JSON parsing error in relevance check: {e}")
+                # Default to relevant to avoid false negatives
+                return {"is_relevant": True, "reason": "Error parsing AI response."}
+                
+        except Exception as e:
+            print(f"Error in relevance check: {e}")
+            # Default to relevant in case of other errors
+            return {"is_relevant": True, "reason": f"An unexpected error occurred: {e}"}
+
+
 # Convenience function for quick triage
 def quick_triage(patient_input: str, api_key: Optional[str] = None) -> Dict[str, Any]:
     """

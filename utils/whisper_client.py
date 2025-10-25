@@ -40,7 +40,7 @@ class WhisperClient:
         "santali": "sat"
     }
     
-    def __init__(self, model_size: str = "large-v3"):
+    def __init__(self, model_size: str = "small"):
         """
         Initialize Whisper client
         
@@ -185,7 +185,7 @@ class WhisperClient:
 def transcribe_voice_input(
     language: Optional[str] = None,
     duration: float = 10.0,
-    model_size: str = "large-v3"
+    model_size: str = "small"
 ) -> VoiceInput:
     """
     Quick function to record and transcribe voice input

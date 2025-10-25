@@ -5,9 +5,9 @@ import os
 import time
 from typing import Optional, Dict, Any, List
 from dotenv import load_dotenv
-from models.schemas import TriageResult, VoiceInput, Symptom, RedFlag, PotentialRisk
+from models.schemas import TriageResult, VoiceInput, Symptom, RedFlag, PotentialRisk, MedicalRelevance
 from utils.whisper_client import WhisperClient
-from agents.groq_client import GroqClient, MedicalTriageAgent
+from agents.groq_client import GroqClient, MedicalTriageAgent, MedicalRelevanceAgent
 
 # Load environment variables from .env file
 load_dotenv()
@@ -16,7 +16,7 @@ load_dotenv()
 class AroviaTriageAgent:
     """Main Arovia triage agent combining voice input, AI reasoning, and medical assessment"""
     
-    def __init__(self, groq_api_key: Optional[str] = None, whisper_model: str = "large-v3"):
+    def __init__(self, groq_api_key: Optional[str] = None, whisper_model: str = "small"):
         """
         Initialize Arovia triage agent
         
@@ -28,6 +28,7 @@ class AroviaTriageAgent:
         self.whisper_client = WhisperClient(model_size=whisper_model)
         self.groq_client = GroqClient(api_key=groq_api_key)
         self.medical_agent = MedicalTriageAgent(self.groq_client)
+        self.relevance_agent = MedicalRelevanceAgent(self.groq_client)
         
         print("Arovia Triage Agent initialized successfully!")
     
@@ -128,6 +129,10 @@ class AroviaTriageAgent:
                 initial_prompt=initial_prompt
             )
             
+            # Guardrail: Check for medical relevance
+            if not self._is_relevant(voice_result.transcribed_text):
+                raise ValueError("Input does not appear to be medically relevant.")
+            
             # Analyze symptoms
             triage_result = self.analyze_symptoms_from_text(voice_result.transcribed_text)
             
@@ -137,6 +142,24 @@ class AroviaTriageAgent:
             print(f"Error in voice-to-triage pipeline: {e}")
             raise
     
+    def _is_relevant(self, text: str) -> bool:
+        """
+        Check if the text is medically relevant using the relevance agent.
+        
+        Args:
+            text: The text to analyze.
+            
+        Returns:
+            True if the text is medically relevant, False otherwise.
+        """
+        try:
+            relevance_result = self.relevance_agent.check_relevance(text)
+            return relevance_result.is_relevant
+        except Exception as e:
+            print(f"Error checking medical relevance: {e}")
+            # Default to assuming relevance to avoid blocking valid cases
+            return True
+
     def _convert_to_triage_result(self, ai_result: Dict[str, Any], original_text: str) -> TriageResult:
         """
         Convert AI analysis result to structured TriageResult
