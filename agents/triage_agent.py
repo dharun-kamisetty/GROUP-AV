@@ -3,11 +3,18 @@ Main triage agent combining Whisper, Groq, and medical reasoning
 """
 import os
 import time
-from typing import Optional, Dict, Any, List
+from typing import Optional, Dict, Any, List, Tuple
 from dotenv import load_dotenv
+<<<<<<< HEAD
 from models.schemas import TriageResult, VoiceInput, Symptom, RedFlag, PotentialRisk, MedicalRelevance
 from utils.whisper_client import WhisperClient
 from agents.groq_client import GroqClient, MedicalTriageAgent, MedicalRelevanceAgent
+=======
+from models.schemas import TriageResult, VoiceInput, Symptom, RedFlag, PotentialRisk, FacilityInfo, ReferralNote
+from utils.whisper_client import WhisperClient
+from utils.facility_matcher import FacilityMatcher
+from agents.groq_client import GroqClient, MedicalTriageAgent
+>>>>>>> origin/dev
 
 # Load environment variables from .env file
 load_dotenv()
@@ -16,7 +23,12 @@ load_dotenv()
 class AroviaTriageAgent:
     """Main Arovia triage agent combining voice input, AI reasoning, and medical assessment"""
     
+<<<<<<< HEAD
     def __init__(self, groq_api_key: Optional[str] = None, whisper_model: str = "small"):
+=======
+    #def __init__(self, groq_api_key: Optional[str] = None, whisper_model: str = "small"):
+    def __init__(self, groq_api_key: Optional[str] = None, whisper_model: str = "large-v3"):
+>>>>>>> origin/dev
         """
         Initialize Arovia triage agent
         
@@ -28,7 +40,11 @@ class AroviaTriageAgent:
         self.whisper_client = WhisperClient(model_size=whisper_model)
         self.groq_client = GroqClient(api_key=groq_api_key)
         self.medical_agent = MedicalTriageAgent(self.groq_client)
+<<<<<<< HEAD
         self.relevance_agent = MedicalRelevanceAgent(self.groq_client)
+=======
+        self.facility_matcher = FacilityMatcher()
+>>>>>>> origin/dev
         
         print("Arovia Triage Agent initialized successfully!")
     
@@ -256,6 +272,161 @@ class AroviaTriageAgent:
             },
             "groq": self.groq_client.get_model_info()
         }
+    
+    def find_recommended_facilities(
+        self,
+        triage_result: TriageResult,
+        user_location: str,
+        radius_km: float = 10.0,
+        user_coordinates: Optional[Tuple[float, float]] = None
+    ) -> List[FacilityInfo]:
+        """
+        Find recommended facilities based on triage result
+        
+        Args:
+            triage_result: Triage assessment result
+            user_location: User's location
+            radius_km: Search radius in kilometers
+            user_coordinates: Optional user coordinates (lat, lon)
+            
+        Returns:
+            List of recommended facilities
+        """
+        try:
+            # Determine specialty from triage result
+            specialty = triage_result.recommended_specialty.lower()
+            
+            # Adjust search radius based on urgency
+            if triage_result.urgency_score >= 8:
+                radius_km = min(radius_km, 5.0)  # Closer facilities for emergencies
+            elif triage_result.urgency_score >= 6:
+                radius_km = min(radius_km, 8.0)  # Moderate distance for urgent cases
+            
+            # Find facilities using coordinates if available
+            if user_coordinates:
+                lat, lon = user_coordinates
+                facilities_data = self.facility_matcher.search_nearby_facilities(
+                    lat, lon, radius_km, specialty
+                )
+            else:
+                # Fallback to location string
+                facilities_data = self.facility_matcher.find_facilities_for_condition(
+                    user_location, specialty, radius_km
+                )
+            
+            # Convert to FacilityInfo objects
+            facilities = []
+            for facility_data in facilities_data:
+                # Handle both dict and FacilityInfo objects
+                if isinstance(facility_data, dict):
+                    facility = FacilityInfo(
+                        name=facility_data["name"],
+                        address=facility_data["address"],
+                        distance_km=facility_data["distance_km"],
+                        specialty=facility_data["specialty_match"],
+                        services=facility_data["services"],
+                        contact=facility_data.get("contact"),
+                        map_link=facility_data["map_link"]
+                    )
+                else:
+                    # Already a FacilityInfo object
+                    facility = facility_data
+                facilities.append(facility)
+            
+            # Sort by distance and filter by urgency
+            facilities.sort(key=lambda x: x.distance_km)
+            
+            # For emergencies, prioritize emergency facilities
+            if triage_result.emergency_detected:
+                emergency_facilities = [
+                    f for f in facilities 
+                    if "emergency" in f.services or "trauma" in f.services
+                ]
+                if emergency_facilities:
+                    return emergency_facilities[:3]
+            
+            return facilities[:5]  # Return top 5 facilities
+            
+        except Exception as e:
+            print(f"Error finding facilities: {e}")
+            return []
+    
+    def generate_referral_note(
+        self,
+        triage_result: TriageResult,
+        user_location: str,
+        patient_id: Optional[str] = None,
+        user_coordinates: Optional[Tuple[float, float]] = None
+    ) -> ReferralNote:
+        """
+        Generate complete referral note with facility recommendations
+        
+        Args:
+            triage_result: Triage assessment result
+            user_location: User's location
+            patient_id: Optional patient identifier
+            user_coordinates: Optional user coordinates (lat, lon)
+            
+        Returns:
+            Complete referral note
+        """
+        try:
+            # Find recommended facilities
+            recommended_facilities = self.find_recommended_facilities(
+                triage_result, user_location, user_coordinates=user_coordinates
+            )
+            
+            # Create referral note
+            referral_note = ReferralNote(
+                patient_id=patient_id,
+                triage_result=triage_result,
+                recommended_facilities=recommended_facilities
+            )
+            
+            return referral_note
+            
+        except Exception as e:
+            print(f"Error generating referral note: {e}")
+            # Return basic referral note
+            return ReferralNote(
+                patient_id=patient_id,
+                triage_result=triage_result,
+                recommended_facilities=[]
+            )
+    
+    def complete_triage_with_facilities(
+        self,
+        text: str,
+        user_location: str,
+        patient_id: Optional[str] = None,
+        user_coordinates: Optional[Tuple[float, float]] = None
+    ) -> ReferralNote:
+        """
+        Complete triage pipeline with facility recommendations
+        
+        Args:
+            text: Patient symptom description
+            user_location: User's location
+            patient_id: Optional patient identifier
+            user_coordinates: Optional user coordinates (lat, lon)
+            
+        Returns:
+            Complete referral note with facility recommendations
+        """
+        try:
+            # Analyze symptoms
+            triage_result = self.analyze_symptoms_from_text(text)
+            
+            # Generate referral note with facilities
+            referral_note = self.generate_referral_note(
+                triage_result, user_location, patient_id, user_coordinates
+            )
+            
+            return referral_note
+            
+        except Exception as e:
+            print(f"Error in complete triage: {e}")
+            raise
 
 
 # Convenience function for quick triage

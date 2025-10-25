@@ -14,6 +14,7 @@ pydantic-settings>=2.0.0
 # Speech Processing
 openai-whisper>=20230918
 sounddevice>=0.4.6    # For audio recording
+soundfile>=0.12.1     # For audio file handling
 pyaudio>=0.2.11       # Alternative audio backend
 
 # Geolocation

@@ -3,12 +3,13 @@ Arovia - AI Health Desk Agent
 Streamlit web application for medical triage
 """
 import streamlit as st
+import streamlit.components.v1 as components
 import os
 import time
 from typing import Optional
 from dotenv import load_dotenv
 from agents.triage_agent import AroviaTriageAgent
-from models.schemas import TriageResult, VoiceInput
+from models.schemas import TriageResult, VoiceInput, ReferralNote
 
 # Load environment variables from .env file
 load_dotenv()
@@ -22,6 +23,16 @@ def initialize_session_state():
         st.session_state.triage_result = None
     if 'voice_result' not in st.session_state:
         st.session_state.voice_result = None
+    if 'referral_note' not in st.session_state:
+        st.session_state.referral_note = None
+    if 'user_location' not in st.session_state:
+        st.session_state.user_location = ""
+    if 'user_coordinates' not in st.session_state:
+        st.session_state.user_coordinates = None
+    if 'manual_location' not in st.session_state:
+        st.session_state.manual_location = False
+    if 'location_processed' not in st.session_state:
+        st.session_state.location_processed = False
 
 
 def setup_page():
@@ -128,6 +139,189 @@ def display_voice_input():
             st.error(f"❌ Error during recording: {e}")
 
 
+def display_location_input():
+    """Display location input interface with automatic geolocation"""
+    st.subheader("📍 Your Location")
+    
+    # Check if location is already set
+    if st.session_state.user_location:
+        st.success(f"📍 Location detected: {st.session_state.user_location}")
+        if st.button("🔄 Change Location"):
+            st.session_state.user_location = ""
+            st.session_state.user_coordinates = None
+            st.rerun()
+        return st.session_state.user_location
+    
+    # Location detection options
+    st.markdown("**🌍 Get Your Location for Nearby Clinic Recommendations**")
+    
+    # Option 1: Automatic location detection
+    col1, col2 = st.columns([2, 1])
+    
+    with col1:
+        st.markdown("**Option 1: Automatic Detection**")
+        st.markdown("Allow location access for instant nearby clinic recommendations")
+        
+        if st.button("🌍 Detect My Location", type="primary", use_container_width=True):
+            st.info("🌍 Requesting location access... Please allow location access in your browser.")
+            
+            # JavaScript for geolocation
+            location_js = """
+            <script>
+            function getLocation() {
+                // Check if location is already stored
+                if (sessionStorage.getItem('arovia_lat') && sessionStorage.getItem('arovia_lon')) {
+                    return; // Already have location
+                }
+                
+                if (navigator.geolocation) {
+                    navigator.geolocation.getCurrentPosition(
+                        function(position) {
+                            const lat = position.coords.latitude;
+                            const lon = position.coords.longitude;
+                            
+                            // Store in session storage
+                            sessionStorage.setItem('arovia_lat', lat);
+                            sessionStorage.setItem('arovia_lon', lon);
+                            
+                            // Show success message
+                            alert('Location detected! Processing...');
+                            
+                            // Reload page to process coordinates
+                            window.location.reload();
+                        },
+                        function(error) {
+                            let message = "Location access denied or unavailable.";
+                            switch(error.code) {
+                                case error.PERMISSION_DENIED:
+                                    message = "Location access denied. Please allow location access or enter manually.";
+                                    break;
+                                case error.POSITION_UNAVAILABLE:
+                                    message = "Location information unavailable.";
+                                    break;
+                                case error.TIMEOUT:
+                                    message = "Location request timed out.";
+                                    break;
+                            }
+                            alert(message);
+                        },
+                        {
+                            enableHighAccuracy: true,
+                            timeout: 10000,
+                            maximumAge: 300000
+                        }
+                    );
+                } else {
+                    alert("Geolocation is not supported by this browser.");
+                }
+            }
+            
+            getLocation();
+            </script>
+            """
+            
+            components.html(location_js, height=0)
+    
+    with col2:
+        st.markdown("**Option 2: Manual Entry**")
+        if st.button("✏️ Enter Manually", use_container_width=True):
+            st.session_state.manual_location = True
+            st.rerun()
+    
+    # Manual location input (fallback)
+    if st.session_state.get('manual_location', False):
+        st.markdown("---")
+        st.markdown("**📝 Manual Location Entry**")
+        
+        location = st.text_input(
+            "Enter your location:",
+            placeholder="Example: Hyderabad, Telangana or Banjara Hills, Hyderabad",
+            help="Enter your city, area, or full address for nearby clinic recommendations"
+        )
+        
+        col1, col2 = st.columns([1, 1])
+        with col1:
+            if st.button("✅ Use This Location", type="primary"):
+                if location:
+                    st.session_state.user_location = location
+                    st.session_state.manual_location = False
+                    st.success(f"📍 Location set: {location}")
+                    st.rerun()
+                else:
+                    st.warning("Please enter a location")
+        
+        with col2:
+            if st.button("🔙 Back to Auto Detection"):
+                st.session_state.manual_location = False
+                st.rerun()
+    
+    # Check for coordinates in session storage (from JavaScript) - only if not already processed
+    if not st.session_state.get('location_processed', False):
+        check_coords_js = """
+        <script>
+        function checkStoredLocation() {
+            const lat = sessionStorage.getItem('arovia_lat');
+            const lon = sessionStorage.getItem('arovia_lon');
+            
+            if (lat && lon) {
+                // Clear the stored coordinates
+                sessionStorage.removeItem('arovia_lat');
+                sessionStorage.removeItem('arovia_lon');
+                
+                // Store in Streamlit session state
+                window.parent.postMessage({
+                    type: 'streamlit:setComponentValue',
+                    key: 'location_coords',
+                    value: {lat: parseFloat(lat), lon: parseFloat(lon)}
+                }, '*');
+            }
+        }
+        
+        // Check for stored coordinates only once
+        checkStoredLocation();
+        </script>
+        """
+        
+        components.html(check_coords_js, height=0)
+    
+    # Handle coordinates from JavaScript
+    if 'location_coords' in st.session_state and not st.session_state.get('location_processed', False):
+        coords = st.session_state.location_coords
+        lat, lon = coords['lat'], coords['lon']
+        
+        # Mark as processed to prevent loop
+        st.session_state.location_processed = True
+        
+        # Reverse geocode to get address
+        try:
+            from geopy.geocoders import Nominatim
+            geocoder = Nominatim(user_agent="arovia-health-desk")
+            location_data = geocoder.reverse(f"{lat}, {lon}")
+            
+            if location_data:
+                address = location_data.address
+                st.session_state.user_location = address
+                st.session_state.user_coordinates = (lat, lon)
+                st.success(f"📍 Location detected: {address}")
+                st.rerun()
+            else:
+                # Use coordinates directly
+                st.session_state.user_location = f"Coordinates: {lat:.4f}, {lon:.4f}"
+                st.session_state.user_coordinates = (lat, lon)
+                st.success(f"📍 Location detected: {lat:.4f}, {lon:.4f}")
+                st.rerun()
+                
+        except Exception as e:
+            st.error(f"Error processing location: {e}")
+            # Use coordinates directly
+            st.session_state.user_location = f"Coordinates: {lat:.4f}, {lon:.4f}"
+            st.session_state.user_coordinates = (lat, lon)
+            st.success(f"📍 Location detected: {lat:.4f}, {lon:.4f}")
+            st.rerun()
+    
+    return st.session_state.get('user_location', '')
+
+
 def display_text_input():
     """Display text input interface"""
     st.subheader("📝 Text Input")
@@ -148,8 +342,19 @@ def display_text_input():
         if patient_input.strip():
             try:
                 with st.spinner("Analyzing symptoms..."):
-                    triage_result = st.session_state.agent.analyze_symptoms_from_text(patient_input)
-                    st.session_state.triage_result = triage_result
+                    if st.session_state.user_location:
+                        # Complete triage with facility recommendations
+                        referral_note = st.session_state.agent.complete_triage_with_facilities(
+                            patient_input, 
+                            st.session_state.user_location,
+                            user_coordinates=st.session_state.get('user_coordinates')
+                        )
+                        st.session_state.referral_note = referral_note
+                        st.session_state.triage_result = referral_note.triage_result
+                    else:
+                        # Basic triage without facilities
+                        triage_result = st.session_state.agent.analyze_symptoms_from_text(patient_input)
+                        st.session_state.triage_result = triage_result
                 
                 st.success("✅ Analysis completed!")
                 
@@ -242,6 +447,158 @@ def display_triage_result():
         st.markdown(f"• **Processing Time:** {st.session_state.voice_result.processing_time:.2f}s")
 
 
+def display_recommended_facilities():
+    """Display recommended healthcare facilities"""
+    if not st.session_state.referral_note or not st.session_state.referral_note.recommended_facilities:
+        return
+    
+    st.subheader("🏥 Recommended Healthcare Facilities")
+    
+    facilities = st.session_state.referral_note.recommended_facilities
+    
+    if not facilities:
+        st.info("No nearby facilities found. Please try expanding your search radius or check a different location.")
+        return
+    
+    # Display facilities
+    for i, facility in enumerate(facilities, 1):
+        with st.expander(f"{i}. {facility.name}", expanded=(i == 1)):
+            col1, col2 = st.columns([2, 1])
+            
+            with col1:
+                st.markdown(f"**📍 Address:** {facility.address}")
+                st.markdown(f"**🏥 Specialty:** {facility.specialty.title()}")
+                st.markdown(f"**📏 Distance:** {facility.distance_km} km")
+                
+                # Facility type badge
+                facility_type = getattr(facility, 'facility_type', 'local')
+                type_colors = {
+                    'government': '🔵',
+                    'private': '🟢', 
+                    'ngo': '🟡',
+                    'local': '⚪'
+                }
+                type_emoji = type_colors.get(facility_type, '⚪')
+                st.markdown(f"**Type:** {type_emoji} {facility_type.title()}")
+                
+                # Services
+                if facility.services:
+                    st.markdown(f"**🩺 Services:** {', '.join(facility.services)}")
+                
+                # Contact info
+                if facility.contact:
+                    st.markdown(f"**📞 Contact:** {facility.contact}")
+            
+            with col2:
+                if facility.map_link:
+                    st.markdown(f"[🗺️ View on Map]({facility.map_link})")
+                
+                # Priority indicator
+                if i == 1:
+                    st.success("🥇 **Primary Recommendation**")
+                elif i <= 3:
+                    st.info(f"🥈 **Alternative {i-1}**")
+                else:
+                    st.info(f"🥉 **Option {i}**")
+    
+    # Summary
+    st.markdown("---")
+    st.markdown(f"**📊 Found {len(facilities)} facilities within your area**")
+    
+    # Facility type breakdown
+    facility_types = {}
+    for facility in facilities:
+        facility_type = getattr(facility, 'facility_type', 'local')
+        facility_types[facility_type] = facility_types.get(facility_type, 0) + 1
+    
+    if facility_types:
+        st.markdown("**🏥 Facility Types:**")
+        for facility_type, count in facility_types.items():
+            type_emoji = {'government': '🔵', 'private': '🟢', 'ngo': '🟡', 'local': '⚪'}.get(facility_type, '⚪')
+            st.markdown(f"• {type_emoji} {facility_type.title()}: {count}")
+
+
+def display_referral_note():
+    """Display complete referral note"""
+    if not st.session_state.referral_note:
+        return
+    
+    st.subheader("📋 Complete Referral Note")
+    
+    referral = st.session_state.referral_note
+    
+    # Download button for referral note
+    if st.button("📥 Download Referral Note"):
+        # Generate referral note text
+        note_text = generate_referral_note_text(referral)
+        
+        # Create download
+        st.download_button(
+            label="Download as TXT",
+            data=note_text,
+            file_name=f"arovia_referral_{int(time.time())}.txt",
+            mime="text/plain"
+        )
+    
+    # Display referral note content
+    with st.expander("📄 View Complete Referral Note", expanded=False):
+        st.markdown(generate_referral_note_text(referral))
+
+
+def generate_referral_note_text(referral: ReferralNote) -> str:
+    """Generate formatted referral note text"""
+    triage = referral.triage_result
+    
+    note = f"""
+AROVIA HEALTH DESK AGENT - REFERRAL NOTE
+{'='*50}
+
+🩺 CLINICAL SUMMARY:
+Chief Complaint: {triage.chief_complaint}
+Duration: {getattr(triage, 'duration', 'Not specified')}
+Severity: {getattr(triage, 'severity', 'Not specified')}
+Associated Symptoms: {', '.join([s.name for s in triage.symptoms]) if triage.symptoms else 'None'}
+
+⚡ URGENCY ASSESSMENT:
+Score: {triage.urgency_score}/10 {'🔴' if triage.urgency_score >= 9 else '🟡' if triage.urgency_score >= 7 else '🟢'}
+Red Flags: {'YES' if triage.red_flags else 'NO'}
+Triage Category: {triage.triage_category.upper()}
+
+⚠️ POTENTIAL RISKS:
+"""
+    
+    if triage.potential_risks:
+        for risk in triage.potential_risks:
+            note += f"• {risk.condition} ({risk.probability} probability)\n"
+    else:
+        note += "• None identified\n"
+    
+    note += f"""
+🏥 RECOMMENDED FACILITIES:
+"""
+    
+    if referral.recommended_facilities:
+        for i, facility in enumerate(referral.recommended_facilities, 1):
+            note += f"""
+{i}. {facility.name}
+   📍 {facility.address}
+   📏 {facility.distance_km} km • {facility.specialty.title()}
+   🗺️ {facility.map_link}
+"""
+    else:
+        note += "• No facilities found in the specified area\n"
+    
+    note += f"""
+⏰ Generated: {referral.generated_at.strftime('%Y-%m-%d %H:%M:%S')}
+🤖 Powered by Arovia v1.0
+
+⚠️ DISCLAIMER: This is a triage support tool, not a medical diagnosis.
+Please consult a healthcare professional for definitive medical advice.
+"""
+    
+    return note
+
+
 def display_sidebar():
     """Display sidebar with information"""
     with st.sidebar:
@@ -295,6 +652,9 @@ def main():
     col1, col2 = st.columns([2, 1])
     
     with col1:
+        # Location input
+        display_location_input()
+        
         # Input methods
         tab1, tab2 = st.tabs(["🎤 Voice Input", "📝 Text Input"])
         
@@ -307,6 +667,11 @@ def main():
         # Display results
         if st.session_state.triage_result:
             display_triage_result()
+        
+        # Display recommended facilities
+        if st.session_state.referral_note:
+            display_recommended_facilities()
+            display_referral_note()
     
     with col2:
         # Sidebar content
