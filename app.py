@@ -177,58 +177,113 @@ def display_location_input():
                 st.session_state.location_processed = False
             
             st.info("🌍 Requesting location access... Please allow location access in your browser.")
+            st.warning("⚠️ If you don't see a location permission dialog, please check your browser's address bar for a location icon and click 'Allow'.")
             
             # JavaScript for geolocation
             location_js = """
             <script>
-            function getLocation() {
+            function requestLocationPermission() {
+                if (navigator.geolocation) {
+                    // First check if we already have permission
+                    navigator.permissions && navigator.permissions.query({name: 'geolocation'}).then(function(result) {
+                        if (result.state === 'granted') {
+                            getCurrentLocation();
+                        } else if (result.state === 'prompt') {
+                            getCurrentLocation();
+                        } else {
+                            alert('Location access is blocked. Please enable location access in your browser settings or enter location manually.');
+                        }
+                    }).catch(function() {
+                        // Fallback for browsers that don't support permissions API
+                        getCurrentLocation();
+                    });
+                } else {
+                    alert("Geolocation is not supported by this browser.");
+                }
+            }
+            
+            function getCurrentLocation() {
+                navigator.geolocation.getCurrentPosition(
+                    function(position) {
+                        const lat = position.coords.latitude;
+                        const lon = position.coords.longitude;
+                        
+                        // Store in session storage
+                        sessionStorage.setItem('arovia_lat', lat);
+                        sessionStorage.setItem('arovia_lon', lon);
+                        
+                        // Show success message
+                        alert('Location detected! Coordinates: ' + lat.toFixed(4) + ', ' + lon.toFixed(4));
+                        
+                        // Reload page to process coordinates
+                        window.location.reload();
+                    },
+                    function(error) {
+                        let message = "Location access denied or unavailable.";
+                        switch(error.code) {
+                            case error.PERMISSION_DENIED:
+                                message = "Location access denied. Please allow location access in your browser or enter manually.";
+                                break;
+                            case error.POSITION_UNAVAILABLE:
+                                message = "Location information unavailable. Please check your internet connection.";
+                                break;
+                            case error.TIMEOUT:
+                                message = "Location request timed out. Please try again.";
+                                break;
+                        }
+                        alert(message);
+                    },
+                    {
+                        enableHighAccuracy: true,
+                        timeout: 20000,
+                        maximumAge: 0  // Force fresh location
+                    }
+                );
+            }
+            
+            // Start the location request process
+            requestLocationPermission();
+            </script>
+            """
+            
+            components.html(location_js, height=0)
+            
+            # Add a direct location request button as backup
+            st.markdown("---")
+            st.markdown("**Alternative: Direct Location Request**")
+            if st.button("🔍 Request Location Permission", key="direct_location", use_container_width=True):
+                st.info("🌍 This will directly request location permission from your browser.")
+                
+                # Direct geolocation request
+                direct_location_js = """
+                <script>
                 if (navigator.geolocation) {
                     navigator.geolocation.getCurrentPosition(
                         function(position) {
                             const lat = position.coords.latitude;
                             const lon = position.coords.longitude;
                             
-                            // Store in session storage
                             sessionStorage.setItem('arovia_lat', lat);
                             sessionStorage.setItem('arovia_lon', lon);
                             
-                            // Show success message
                             alert('Location detected! Coordinates: ' + lat.toFixed(4) + ', ' + lon.toFixed(4));
-                            
-                            // Reload page to process coordinates
                             window.location.reload();
                         },
                         function(error) {
-                            let message = "Location access denied or unavailable.";
-                            switch(error.code) {
-                                case error.PERMISSION_DENIED:
-                                    message = "Location access denied. Please allow location access or enter manually.";
-                                    break;
-                                case error.POSITION_UNAVAILABLE:
-                                    message = "Location information unavailable.";
-                                    break;
-                                case error.TIMEOUT:
-                                    message = "Location request timed out.";
-                                    break;
-                            }
-                            alert(message);
+                            alert('Location access denied or unavailable. Error: ' + error.message);
                         },
                         {
                             enableHighAccuracy: true,
                             timeout: 15000,
-                            maximumAge: 300000
+                            maximumAge: 0
                         }
                     );
                 } else {
                     alert("Geolocation is not supported by this browser.");
                 }
-            }
-            
-            getLocation();
-            </script>
-            """
-            
-            components.html(location_js, height=0)
+                </script>
+                """
+                components.html(direct_location_js, height=0)
     
     with col2:
         st.markdown("**Option 2: Manual Entry**")
