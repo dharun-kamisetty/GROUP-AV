@@ -5,10 +5,14 @@ import os
 from typing import Optional, Dict, Any, List
 from groq import Groq
 from langchain_groq import ChatGroq
-from langchain.prompts import ChatPromptTemplate
-from langchain.schema import HumanMessage, SystemMessage
+from langchain_core.prompts import ChatPromptTemplate
+from langchain_core.messages import HumanMessage, SystemMessage
 import json
 import time
+from dotenv import load_dotenv
+
+# Load environment variables from .env file
+load_dotenv()
 
 
 class GroqClient:
@@ -246,7 +250,18 @@ Respond ONLY with valid JSON. No additional text or explanations.
             
             # Parse JSON response
             try:
-                result = json.loads(response.content)
+                # Clean the response content (remove markdown code blocks if present)
+                content = response.content.strip()
+                if content.startswith("```") and content.endswith("```"):
+                    # Remove markdown code blocks
+                    lines = content.split('\n')
+                    content = '\n'.join(lines[1:-1])  # Remove first and last lines
+                elif content.startswith("```json"):
+                    # Remove json markdown code blocks
+                    lines = content.split('\n')
+                    content = '\n'.join(lines[1:-1])  # Remove first and last lines
+                
+                result = json.loads(content)
                 result["processing_time"] = processing_time
                 return result
             except json.JSONDecodeError as e:

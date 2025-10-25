@@ -4,9 +4,13 @@ Main triage agent combining Whisper, Groq, and medical reasoning
 import os
 import time
 from typing import Optional, Dict, Any, List
+from dotenv import load_dotenv
 from models.schemas import TriageResult, VoiceInput, Symptom, RedFlag, PotentialRisk
 from utils.whisper_client import WhisperClient
 from agents.groq_client import GroqClient, MedicalTriageAgent
+
+# Load environment variables from .env file
+load_dotenv()
 
 
 class AroviaTriageAgent:

@@ -6,8 +6,12 @@ import streamlit as st
 import os
 import time
 from typing import Optional
+from dotenv import load_dotenv
 from agents.triage_agent import AroviaTriageAgent
 from models.schemas import TriageResult, VoiceInput
+
+# Load environment variables from .env file
+load_dotenv()
 
 
 def initialize_session_state():
