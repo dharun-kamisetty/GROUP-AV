@@ -354,6 +354,7 @@ Respond ONLY with the JSON object.
             try:
                 content = response.content.strip()
                 result = json.loads(content)
+                result["raw_response"] = content
                 return result
             except json.JSONDecodeError as e:
                 print(f"JSON parsing error in relevance check: {e}")

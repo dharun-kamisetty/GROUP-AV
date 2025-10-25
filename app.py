@@ -8,8 +8,8 @@ import os
 import time
 from typing import Optional
 from dotenv import load_dotenv
-from agents.triage_agent import AroviaTriageAgent
-from models.schemas import TriageResult, VoiceInput, ReferralNote
+from agents.triage_agent import AroviaTriageAgent, ReferralNote
+from models.schemas import TriageResult, VoiceInput
 
 # Load environment variables from .env file
 load_dotenv()
@@ -353,7 +353,7 @@ def display_text_input():
                         st.session_state.triage_result = referral_note.triage_result
                     else:
                         # Basic triage without facilities
-                        triage_result = st.session_state.agent.analyze_symptoms_from_text(patient_input)
+                        triage_result, _ = st.session_state.agent.analyze_symptoms_from_text(patient_input)
                         st.session_state.triage_result = triage_result
                 
                 st.success("✅ Analysis completed!")

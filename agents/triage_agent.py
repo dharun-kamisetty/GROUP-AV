@@ -5,16 +5,11 @@ import os
 import time
 from typing import Optional, Dict, Any, List, Tuple
 from dotenv import load_dotenv
-<<<<<<< HEAD
-from models.schemas import TriageResult, VoiceInput, Symptom, RedFlag, PotentialRisk, MedicalRelevance
-from utils.whisper_client import WhisperClient
-from agents.groq_client import GroqClient, MedicalTriageAgent, MedicalRelevanceAgent
-=======
-from models.schemas import TriageResult, VoiceInput, Symptom, RedFlag, PotentialRisk, FacilityInfo, ReferralNote
+from models.schemas import (TriageResult, VoiceInput, Symptom, RedFlag, 
+                            PotentialRisk, FacilityInfo, ReferralNote)
 from utils.whisper_client import WhisperClient
 from utils.facility_matcher import FacilityMatcher
-from agents.groq_client import GroqClient, MedicalTriageAgent
->>>>>>> origin/dev
+from agents.groq_client import GroqClient, MedicalTriageAgent, MedicalRelevanceAgent
 
 # Load environment variables from .env file
 load_dotenv()
@@ -23,12 +18,8 @@ load_dotenv()
 class AroviaTriageAgent:
     """Main Arovia triage agent combining voice input, AI reasoning, and medical assessment"""
     
-<<<<<<< HEAD
     def __init__(self, groq_api_key: Optional[str] = None, whisper_model: str = "small"):
-=======
-    #def __init__(self, groq_api_key: Optional[str] = None, whisper_model: str = "small"):
-    def __init__(self, groq_api_key: Optional[str] = None, whisper_model: str = "large-v3"):
->>>>>>> origin/dev
+    # def __init__(self, groq_api_key: Optional[str] = None, whisper_model: str = "large-v3"):
         """
         Initialize Arovia triage agent
         
@@ -40,11 +31,8 @@ class AroviaTriageAgent:
         self.whisper_client = WhisperClient(model_size=whisper_model)
         self.groq_client = GroqClient(api_key=groq_api_key)
         self.medical_agent = MedicalTriageAgent(self.groq_client)
-<<<<<<< HEAD
         self.relevance_agent = MedicalRelevanceAgent(self.groq_client)
-=======
         self.facility_matcher = FacilityMatcher()
->>>>>>> origin/dev
         
         print("Arovia Triage Agent initialized successfully!")
     
@@ -102,7 +90,7 @@ class AroviaTriageAgent:
             # Convert to structured TriageResult
             triage_result = self._convert_to_triage_result(ai_result, text)
             
-            return triage_result
+            return triage_result, ai_result.get("processing_time", 0)
             
         except Exception as e:
             print(f"Error analyzing symptoms: {e}")
@@ -117,8 +105,9 @@ class AroviaTriageAgent:
                 triage_category="standard",
                 emergency_detected=False,
                 action_required="Consult a healthcare provider",
-                timestamp=time.time()
-            )
+                timestamp=time.time(),
+                error=str(e)
+            ), 0
     
     def process_voice_to_triage(
         self,
@@ -150,7 +139,7 @@ class AroviaTriageAgent:
                 raise ValueError("Input does not appear to be medically relevant.")
             
             # Analyze symptoms
-            triage_result = self.analyze_symptoms_from_text(voice_result.transcribed_text)
+            triage_result, _ = self.analyze_symptoms_from_text(voice_result.transcribed_text)
             
             return voice_result, triage_result
             
@@ -170,7 +159,7 @@ class AroviaTriageAgent:
         """
         try:
             relevance_result = self.relevance_agent.check_relevance(text)
-            return relevance_result.is_relevant
+            return relevance_result.get("is_relevant", True)
         except Exception as e:
             print(f"Error checking medical relevance: {e}")
             # Default to assuming relevance to avoid blocking valid cases
@@ -189,7 +178,7 @@ class AroviaTriageAgent:
         """
         try:
             # Extract symptoms
-            symptoms = []
+            symptoms: List[Symptom] = []
             if "symptoms" in ai_result:
                 for symptom_data in ai_result["symptoms"]:
                     symptom = Symptom(
@@ -201,7 +190,7 @@ class AroviaTriageAgent:
                     symptoms.append(symptom)
             
             # Extract red flags
-            red_flags = []
+            red_flags: List[RedFlag] = []
             if "red_flags" in ai_result:
                 for flag_data in ai_result["red_flags"]:
                     red_flag = RedFlag(
@@ -213,7 +202,7 @@ class AroviaTriageAgent:
                     red_flags.append(red_flag)
             
             # Extract potential risks
-            potential_risks = []
+            potential_risks: List[PotentialRisk] = []
             if "potential_risks" in ai_result:
                 for risk_data in ai_result["potential_risks"]:
                     risk = PotentialRisk(
@@ -241,7 +230,8 @@ class AroviaTriageAgent:
                 recommended_specialty=ai_result.get("recommended_specialty", "General Medicine"),
                 triage_category=triage_category,
                 emergency_detected=ai_result.get("emergency_detected", False),
-                action_required=ai_result.get("action_required", "Consult a healthcare provider")
+                action_required=ai_result.get("action_required", "Consult a healthcare provider"),
+                error=ai_result.get("error")
             )
             
         except Exception as e:
@@ -256,7 +246,8 @@ class AroviaTriageAgent:
                 recommended_specialty="General Medicine",
                 triage_category="standard",
                 emergency_detected=False,
-                action_required="Consult a healthcare provider"
+                action_required="Consult a healthcare provider",
+                error=f"Error parsing AI response: {e}"
             )
     
     def get_supported_languages(self) -> Dict[str, str]:
@@ -415,7 +406,7 @@ class AroviaTriageAgent:
         """
         try:
             # Analyze symptoms
-            triage_result = self.analyze_symptoms_from_text(text)
+            triage_result, _ = self.analyze_symptoms_from_text(text)
             
             # Generate referral note with facilities
             referral_note = self.generate_referral_note(
@@ -464,7 +455,6 @@ def quick_voice_triage(
 
 
 if __name__ == "__main__":
-    from utils.report_generator import generate_health_report
     # Test the complete triage agent
     print("Testing Arovia Triage Agent...")
     
@@ -486,9 +476,5 @@ if __name__ == "__main__":
             print(f"Emergency Detected: {triage_result.emergency_detected}")
             print(f"Triage Category: {triage_result.triage_category}")
 
-            # Generate PDF report
-            report_path = generate_health_report(triage_result)
-            print(f"Health report generated: {report_path}")
-            
         except Exception as e:
             print(f"Test failed for {lang}: {e}")
