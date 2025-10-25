@@ -3,7 +3,7 @@ Main triage agent combining Whisper, Groq, and medical reasoning
 """
 import os
 import time
-from typing import Optional, Dict, Any, List
+from typing import Optional, Dict, Any, List, Tuple
 from dotenv import load_dotenv
 from models.schemas import TriageResult, VoiceInput, Symptom, RedFlag, PotentialRisk, FacilityInfo, ReferralNote
 from utils.whisper_client import WhisperClient
