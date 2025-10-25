@@ -240,7 +240,8 @@ class AroviaTriageAgent:
         self,
         triage_result: TriageResult,
         user_location: str,
-        radius_km: float = 10.0
+        radius_km: float = 10.0,
+        user_coordinates: Optional[Tuple[float, float]] = None
     ) -> List[FacilityInfo]:
         """
         Find recommended facilities based on triage result
@@ -249,6 +250,7 @@ class AroviaTriageAgent:
             triage_result: Triage assessment result
             user_location: User's location
             radius_km: Search radius in kilometers
+            user_coordinates: Optional user coordinates (lat, lon)
             
         Returns:
             List of recommended facilities
@@ -263,10 +265,31 @@ class AroviaTriageAgent:
             elif triage_result.urgency_score >= 6:
                 radius_km = min(radius_km, 8.0)  # Moderate distance for urgent cases
             
-            # Find facilities
-            facilities = self.facility_matcher.find_facilities_for_condition(
-                user_location, specialty, radius_km
-            )
+            # Find facilities using coordinates if available
+            if user_coordinates:
+                lat, lon = user_coordinates
+                facilities_data = self.facility_matcher.search_nearby_facilities(
+                    lat, lon, radius_km, specialty
+                )
+            else:
+                # Fallback to location string
+                facilities_data = self.facility_matcher.find_facilities_for_condition(
+                    user_location, specialty, radius_km
+                )
+            
+            # Convert to FacilityInfo objects
+            facilities = []
+            for facility_data in facilities_data:
+                facility = FacilityInfo(
+                    name=facility_data["name"],
+                    address=facility_data["address"],
+                    distance_km=facility_data["distance_km"],
+                    specialty=facility_data["specialty_match"],
+                    services=facility_data["services"],
+                    contact=facility_data["contact"],
+                    map_link=facility_data["map_link"]
+                )
+                facilities.append(facility)
             
             # Sort by distance and filter by urgency
             facilities.sort(key=lambda x: x.distance_km)
@@ -290,7 +313,8 @@ class AroviaTriageAgent:
         self,
         triage_result: TriageResult,
         user_location: str,
-        patient_id: Optional[str] = None
+        patient_id: Optional[str] = None,
+        user_coordinates: Optional[Tuple[float, float]] = None
     ) -> ReferralNote:
         """
         Generate complete referral note with facility recommendations
@@ -299,6 +323,7 @@ class AroviaTriageAgent:
             triage_result: Triage assessment result
             user_location: User's location
             patient_id: Optional patient identifier
+            user_coordinates: Optional user coordinates (lat, lon)
             
         Returns:
             Complete referral note
@@ -306,7 +331,7 @@ class AroviaTriageAgent:
         try:
             # Find recommended facilities
             recommended_facilities = self.find_recommended_facilities(
-                triage_result, user_location
+                triage_result, user_location, user_coordinates=user_coordinates
             )
             
             # Create referral note
@@ -331,7 +356,8 @@ class AroviaTriageAgent:
         self,
         text: str,
         user_location: str,
-        patient_id: Optional[str] = None
+        patient_id: Optional[str] = None,
+        user_coordinates: Optional[Tuple[float, float]] = None
     ) -> ReferralNote:
         """
         Complete triage pipeline with facility recommendations
@@ -340,6 +366,7 @@ class AroviaTriageAgent:
             text: Patient symptom description
             user_location: User's location
             patient_id: Optional patient identifier
+            user_coordinates: Optional user coordinates (lat, lon)
             
         Returns:
             Complete referral note with facility recommendations
@@ -350,7 +377,7 @@ class AroviaTriageAgent:
             
             # Generate referral note with facilities
             referral_note = self.generate_referral_note(
-                triage_result, user_location, patient_id
+                triage_result, user_location, patient_id, user_coordinates
             )
             
             return referral_note
