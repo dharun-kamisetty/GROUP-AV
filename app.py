@@ -31,6 +31,8 @@ def initialize_session_state():
         st.session_state.user_coordinates = None
     if 'manual_location' not in st.session_state:
         st.session_state.manual_location = False
+    if 'location_processed' not in st.session_state:
+        st.session_state.location_processed = False
 
 
 def setup_page():
@@ -167,6 +169,11 @@ def display_location_input():
             location_js = """
             <script>
             function getLocation() {
+                // Check if location is already stored
+                if (sessionStorage.getItem('arovia_lat') && sessionStorage.getItem('arovia_lon')) {
+                    return; // Already have location
+                }
+                
                 if (navigator.geolocation) {
                     navigator.geolocation.getCurrentPosition(
                         function(position) {
@@ -178,7 +185,7 @@ def display_location_input():
                             sessionStorage.setItem('arovia_lon', lon);
                             
                             // Show success message
-                            alert('Location detected! Coordinates: ' + lat + ', ' + lon);
+                            alert('Location detected! Processing...');
                             
                             // Reload page to process coordinates
                             window.location.reload();
@@ -248,38 +255,42 @@ def display_location_input():
                 st.session_state.manual_location = False
                 st.rerun()
     
-    # Check for coordinates in session storage (from JavaScript)
-    check_coords_js = """
-    <script>
-    function checkStoredLocation() {
-        const lat = sessionStorage.getItem('arovia_lat');
-        const lon = sessionStorage.getItem('arovia_lon');
-        
-        if (lat && lon) {
-            // Clear the stored coordinates
-            sessionStorage.removeItem('arovia_lat');
-            sessionStorage.removeItem('arovia_lon');
+    # Check for coordinates in session storage (from JavaScript) - only if not already processed
+    if not st.session_state.get('location_processed', False):
+        check_coords_js = """
+        <script>
+        function checkStoredLocation() {
+            const lat = sessionStorage.getItem('arovia_lat');
+            const lon = sessionStorage.getItem('arovia_lon');
             
-            // Store in Streamlit session state
-            window.parent.postMessage({
-                type: 'streamlit:setComponentValue',
-                key: 'location_coords',
-                value: {lat: parseFloat(lat), lon: parseFloat(lon)}
-            }, '*');
+            if (lat && lon) {
+                // Clear the stored coordinates
+                sessionStorage.removeItem('arovia_lat');
+                sessionStorage.removeItem('arovia_lon');
+                
+                // Store in Streamlit session state
+                window.parent.postMessage({
+                    type: 'streamlit:setComponentValue',
+                    key: 'location_coords',
+                    value: {lat: parseFloat(lat), lon: parseFloat(lon)}
+                }, '*');
+            }
         }
-    }
-    
-    // Check for stored coordinates
-    checkStoredLocation();
-    </script>
-    """
-    
-    components.html(check_coords_js, height=0)
+        
+        // Check for stored coordinates only once
+        checkStoredLocation();
+        </script>
+        """
+        
+        components.html(check_coords_js, height=0)
     
     # Handle coordinates from JavaScript
-    if 'location_coords' in st.session_state:
+    if 'location_coords' in st.session_state and not st.session_state.get('location_processed', False):
         coords = st.session_state.location_coords
         lat, lon = coords['lat'], coords['lon']
+        
+        # Mark as processed to prevent loop
+        st.session_state.location_processed = True
         
         # Reverse geocode to get address
         try:
