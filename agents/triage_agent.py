@@ -270,6 +270,7 @@ def quick_voice_triage(
 
 
 if __name__ == "__main__":
+    from utils.report_generator import generate_health_report
     # Test the complete triage agent
     print("Testing Arovia Triage Agent...")
     
@@ -290,6 +291,10 @@ if __name__ == "__main__":
             print(f"Urgency Score: {triage_result.urgency_score}")
             print(f"Emergency Detected: {triage_result.emergency_detected}")
             print(f"Triage Category: {triage_result.triage_category}")
+
+            # Generate PDF report
+            report_path = generate_health_report(triage_result)
+            print(f"Health report generated: {report_path}")
             
         except Exception as e:
             print(f"Test failed for {lang}: {e}")
