@@ -1,69 +1,59 @@
-# 🏥 Arovia - AI Health Desk Agent
 
-> Intelligent triage assistant revolutionizing first-point healthcare access in India
+# Arovia - AI Health Desk Agent Documentation
 
-[![Python](https://img.shields.io/badge/Python-3.11+-blue.svg)](https://www.python.org/downloads/)
-[![LangChain](https://img.shields.io/badge/LangChain-Latest-green.svg)](https://github.com/langchain-ai/langchain)
-[![Groq](https://img.shields.io/badge/Groq-Llama%203.3%2070B-purple.svg)](https://groq.com)
-[![Status](https://img.shields.io/badge/Status-Live%20Demo-success.svg)](https://arovia.streamlit.app)
+This document provides a comprehensive overview of the Arovia project, its features, architecture, and setup instructions.
 
----
-
-## 🌟 What is Arovia?
+## 1. Project Overview
 
 **Arovia** is an AI-powered Health Desk Agent designed to be the intelligent first point of contact in India's overburdened public health system. Named after the fusion of "AI" and "Rovia" (Sanskrit for healing), Arovia combines cutting-edge language models with medical protocols to provide safe, accurate, and accessible health triage.
 
-### The Problem We're Solving
+### 1.1. The Problem
 
 India faces a critical healthcare access crisis:
-- 🏥 Doctor-to-patient ratio: **1:1,445** (WHO recommends 1:1,000)
-- ⏰ Average wait time: **2-4 hours** for basic consultations
-- 🚨 Non-clinical front-desk staff making critical triage decisions
-- 🗺️ Patients arriving at facilities that can't treat their condition
-- 📊 10+ minutes average door-to-triage time at Primary Health Centers
+- Doctor-to-patient ratio: **1:1,445** (WHO recommends 1:1,000)
+- Average wait time: **2-4 hours** for basic consultations
+- Non-clinical front-desk staff making critical triage decisions
+- Patients arriving at facilities that can't treat their condition
+- 10+ minutes average door-to-triage time at Primary Health Centers
 
-**Arovia bridges this gap** by providing instant, intelligent triage that:
+Arovia bridges this gap by providing instant, intelligent triage that:
 1. Identifies emergency symptoms requiring immediate care
 2. Assesses urgency levels with medical accuracy
 3. Matches patients to appropriate nearby facilities
 4. Generates structured referral notes for healthcare providers
 
----
+## 2. Features
 
-## ✨ Key Features
-
-### 🎯 Intelligent Symptom Triage
+### 2.1. Intelligent Symptom Triage
 - Natural language understanding of patient symptoms
 - Context-aware follow-up questions
 - Urgency scoring (1-10 scale) using validated medical protocols
 - Identification of potential conditions and risks
 
-### 🚨 Emergency Detection System
+### 2.2. Emergency Detection System
 - Real-time red flag identification for life-threatening conditions
 - Immediate escalation protocols for cardiac, neurological, and trauma cases
 - Built-in safety rails to prevent misdiagnosis
 
-### 🗣️ Multilingual Voice Interface
+### 2.3. Multilingual Voice Interface
 - Speech-to-text using Whisper-Large model
 - Support for Hindi, English, and other Indic languages
 - Accessible for low-literacy populations
 
-### 📍 Smart Facility Matching
+### 2.4. Smart Facility Matching
 - Real-time geolocation using OpenStreetMap
 - Search for nearby clinics within customizable radius
 - Filter by specialty and service availability
 - Distance calculation and map links
 
-### 📋 Structured Referral Notes
+### 2.5. Structured Referral Notes
 - Medical-compliant documentation format
 - Comprehensive symptom summary
 - Urgency assessment and red flags
 - Recommended facilities with contact information
 - Downloadable for easy handoff to healthcare providers
 
----
-
-## 🏗️ System Architecture
+## 3. System Architecture
 
 ```
 ┌──────────────────────────────────────────────────────────────────┐
@@ -185,11 +175,7 @@ India faces a critical healthcare access crisis:
 └──────────────────────────────────────────────────────────────────┘
 ```
 
----
-
-## 🛠️ Technology Stack
-
-### Core Technologies
+## 4. Technology Stack
 
 | Component | Technology | Purpose |
 |-----------|-----------|---------|
@@ -197,63 +183,61 @@ India faces a critical healthcare access crisis:
 | **🔗 Orchestration** | LangChain | Agent coordination, structured outputs, prompt management |
 | **🗣️ Speech-to-Text** | Whisper-Large | Voice input processing for Indic languages |
 | **📍 Geolocation** | OpenStreetMap API | Clinic search, distance calculation, mapping |
-| **🎨 Frontend** | React, Vite, Tailwind CSS | Modern, responsive web interface |
-| **🚀 Backend** | FastAPI | High-performance API for triage and facility matching |
+| **🎨 Frontend** | Streamlit | Rapid web interface development |
 | **📦 Package Manager** | uv | Lightning-fast dependency management |
 | **✅ Validation** | Pydantic | Structured medical data models |
 
----
+## 5. Setup and Installation
 
-## 🚀 Quick Start
+### 5.1. Prerequisites
+- Python 3.11 or higher
+- `uv` package manager (`curl -LsSf https://astral.sh/uv/install.sh | sh`)
 
-### Prerequisites
-```bash
-# Python 3.11 or higher
-python --version
+### 5.2. Installation
+1.  **Clone the repository:**
+    ```bash
+    git clone https://github.com/your-team/arovia.git
+    cd arovia
+    ```
+2.  **Install dependencies:**
+    ```bash
+    uv pip install -r requirements.txt
+    ```
+3.  **Configure environment variables:**
+    ```bash
+    cp .env.example .env
+    ```
+    Edit the `.env` file and add your `GROQ_API_KEY`.
 
-# uv package manager
-curl -LsSf https://astral.sh/uv/install.sh | sh
+### 5.3. Running the Application
+-   **Streamlit Web App:**
+    ```bash
+    streamlit run app.py
+    ```
+-   **FastAPI Backend:**
+    ```bash
+    uvicorn api.main:app --host 0.0.0.0 --port 8000 --reload
+    ```
 
-# Node.js and npm
-node --version
-npm --version
-```
+## 6. API Endpoints
 
-### Installation
+The FastAPI backend provides the following endpoints:
 
-```bash
-# 1. Clone Arovia repository
-git clone https://github.com/your-team/arovia.git
-cd arovia
+-   `GET /`: Root endpoint with API status.
+-   `GET /health`: Health check for API services.
+-   `POST /triage/text`: Analyzes symptoms from text input.
+    -   **Request Body:** `{"symptoms": "...", "location": "...", "coordinates": {"latitude": ..., "longitude": ...}}`
+    -   **Response Body:** A `TriageResult` object.
+-   `POST /triage/voice`: Analyzes symptoms from voice input.
+    -   **Request Body:** `multipart/form-data` with `audio_file` and `language`.
+    -   **Response Body:** A dictionary containing `voice_result` and `triage_result`.
+-   `POST /facilities`: Get nearby healthcare facilities.
+    -   **Request Body:** `{"location": "...", "coordinates": {"latitude": ..., "longitude": ...}}`
+    -   **Response Body:** A list of facility information dictionaries.
+-   `GET /languages`: Get a list of supported languages for voice input.
+-   `GET /models`: Get information about the loaded AI models.
 
-# 2. Install backend dependencies using uv
-uv pip install -r requirements.txt
-
-# 3. Install frontend dependencies
-cd frontend
-npm install
-cd ..
-
-# 4. Configure environment variables
-cp .env.example .env
-# Edit .env and add your GROQ_API_KEY
-
-# 5. Launch Arovia
-./run_frontend.py &
-./run_api.py &
-```
-
-### Environment Variables
-```bash
-# .env file
-GROQ_API_KEY=gsk_your_groq_api_key_here
-# Optional: For premium OpenStreetMap features
-# OSM_API_KEY=your_osm_key
-```
-
----
-
-## 🎬 Demo Scenarios
+## 7. Demo Scenarios
 
 ### Scenario 1: 🚨 Emergency Case (Red Flag Detection)
 
@@ -292,8 +276,6 @@ NEAREST EMERGENCY FACILITIES:
    📍 4.1 km • 12 min drive • [View Map]
    Cardiology Specialist On-Call
 ```
-
----
 
 ### Scenario 2: 🟡 Urgent Case (Non-Emergency)
 
@@ -337,8 +319,6 @@ NEAREST APPROPRIATE FACILITIES:
    Services: Pulmonary function tests, Specialist available
 ```
 
----
-
 ### Scenario 3: 🟢 Standard Case (Non-Urgent)
 
 **Patient Input:**
@@ -379,190 +359,57 @@ NEARBY GENERAL PRACTITIONERS:
    Walk-in available, Avg wait: 15 mins
 ```
 
----
+## 8. Guardrails and Safety
 
-## 🛡️ Safety & Compliance
+Arovia is designed with a strong emphasis on safety and includes several guardrails to ensure responsible AI usage in a medical context.
 
-### Medical Safety Rails
+### 8.1. Medical Relevance Check
+- **Purpose:** To prevent the system from processing non-medical queries.
+- **Implementation:** A `MedicalRelevanceAgent` is used to classify the user's input. If the input is deemed not medically relevant, the system will not proceed with the triage process.
+- **Code:** `agents/triage_agent.py` - `_is_relevant()` method.
 
-#### Emergency Keyword Detection
-```python
-EMERGENCY_KEYWORDS = {
-    "cardiac": [
-        "chest pain", "heart attack", "crushing chest pressure",
-        "pain radiating to arm/jaw", "severe palpitations"
-    ],
-    "neurological": [
-        "stroke", "face drooping", "arm weakness", "slurred speech",
-        "sudden severe headache", "loss of consciousness", "seizure"
-    ],
-    "respiratory": [
-        "can't breathe", "choking", "severe shortness of breath",
-        "blue lips", "gasping for air"
-    ],
-    "trauma": [
-        "severe bleeding", "head injury", "broken bone visible",
-        "penetrating wound", "unconscious after injury"
-    ],
-    "mental_health": [
-        "suicide", "want to die", "self-harm", "kill myself"
-    ],
-    "other": [
-        "severe abdominal pain", "pregnancy + bleeding",
-        "high fever in infant", "allergic reaction + swelling"
-    ]
-}
+### 8.2. Emergency Keyword Detection
+- **Purpose:** To immediately identify and escalate high-risk medical emergencies.
+- **Implementation:** A predefined dictionary of emergency keywords is used to scan the user's input. If a keyword is detected, the urgency score is automatically set to 10, and an emergency alert is triggered.
+- **Code:** `agents/triage_agent.py` and `prompts/triage_prompts.py`.
 
-# If ANY keyword detected → Urgency = 10, Immediate escalation to 108
-```
+### 8.3. Medical Disclaimers
+- **Purpose:** To clearly communicate that Arovia is a support tool and not a substitute for professional medical advice.
+- **Implementation:** Every output from the system, including the web interface and downloadable referral notes, includes a prominent medical disclaimer.
 
-### Disclaimers & Legal Compliance
+### 8.4. Data Privacy
+- **Purpose:** To protect user privacy and comply with data protection regulations.
+- **Implementation:** Arovia is designed to be privacy-by-design. It does not store any personal health information, and all processing is session-based.
 
-**Every Arovia output includes:**
-```
-⚠️ MEDICAL DISCLAIMER:
-Arovia is a triage support tool and does NOT provide medical
-diagnoses or treatment recommendations. This assessment is based
-on symptom information provided and should not replace consultation
-with qualified healthcare professionals.
+## 9. Evaluation
 
-In case of emergency, call 108 immediately.
-```
+The performance of the Arovia system is evaluated using both technical and clinical metrics.
 
-### Data Privacy
-- ✅ No storage of personal health information
-- ✅ No user authentication required (privacy-by-design)
-- ✅ Session-based processing (data deleted after session)
-- ✅ Compliant with India's Digital Personal Data Protection Act 2023
-
-### Medical Device Classification
-- **India**: Likely Class A/B (low risk) under Medical Device Rules 2017
-- **Purpose**: Clinical decision support tool, not diagnostic device
-- **Validation**: Tested against validated clinical vignettes
-
----
-
-## 📊 Success Metrics & Evaluation
-
-### Technical Performance
+### 9.1. Technical Performance
 
 | Metric | Target | Measurement |
-|--------|--------|-------------|
-| **Red Flag Detection Accuracy** | 100% | Tested with 10 emergency scenarios |
-| **Urgency Scoring Precision** | ±1 point | Compared with medical professional assessment |
-| **Facility Matching Speed** | <2 seconds | Average response time for geolocation query |
-| **Speech Recognition Accuracy** | >85% | Word Error Rate (WER) for Hindi/English |
-| **End-to-End Latency** | <5 seconds | User input → Complete referral note |
-| **System Uptime** | >99% | During demo period |
+|---|---|---|
+| **Red Flag Detection Accuracy** | 100% | Tested with a golden dataset of 10 emergency scenarios. |
+| **Urgency Scoring Precision** | ±1 point | Compared with medical professional assessment on a set of 20 clinical vignettes. |
+| **Facility Matching Speed** | <2 seconds | Average response time for a geolocation query. |
+| **Speech Recognition Accuracy** | >85% | Word Error Rate (WER) for Hindi/English on a test set of 50 audio clips. |
+| **End-to-End Latency** | <5 seconds | Average time from user input to complete referral note generation. |
 
-### Clinical Validation
+### 9.2. Clinical Validation
+
+The system's clinical accuracy is validated against a `golden_dataset.json` file containing a set of test cases with expected outcomes.
 
 | Test Case Type | Sample Size | Expected Accuracy |
-|----------------|-------------|-------------------|
+|---|---|---|
 | Emergency Cases | 10 scenarios | 100% red flag detection |
-| Urgent Cases | 10 scenarios | 90% appropriate triage |
+| Urgent Cases | 10 scenarios | 90% appropriate triage category |
 | Standard Cases | 10 scenarios | 85% correct assessment |
 
----
+- **Testing:** The `test_golden_dataset.py` script is used to run the evaluation against the golden dataset.
 
-## 🚀 Future Roadmap (Post-Hackathon)
+## 10. Future Roadmap
 
-### Phase 1: Pilot Deployment (Q1 2025)
-- Deploy in 5 Primary Health Centers in Telangana
-- Collect real-world usage data and feedback
-- Refine urgency scoring based on outcomes
-- Build analytics dashboard for health officers
-
-### Phase 2: Feature Enhancement (Q2 2025)
-- Add 5+ Indic languages (Bengali, Marathi, Gujarati, Kannada, Malayalam)
-- Integrate with eSanjeevani telemedicine platform
-- Build WhatsApp bot for feature phone users
-- Develop mobile app for community health workers
-
-### Phase 3: AI Enhancement (Q3 2025)
-- Implement RAG (Retrieval-Augmented Generation) with ICMR guidelines
-- Add medical history context (returning patients)
-- Predictive analytics for disease outbreak detection
-- Integration with National Health Stack (ABDM)
-
-### Phase 4: Scale (Q4 2025 - 2026)
-- Expand to 100+ PHCs across 5 states
-- Partner with NGOs and government health programs
-- Open-source community ecosystem
-- Research publication on clinical validation
-
----
-
-## 🛠️ Development Setup
-
-### Project Structure
-```
-arovia/
-├── app.py                          # Main Streamlit application
-├── requirements.txt                # Python dependencies
-├── .env.example                    # Environment template
-├── README.md                       # This file
-│
-├── agents/
-│   ├── __init__.py
-│   ├── triage_agent.py            # Core triage logic with LangChain
-│   └── groq_client.py             # Groq API client
-│
-├── models/
-│   ├── __init__.py
-│   └── schemas.py                 # Pydantic models for structured outputs
-│
-├── prompts/
-│   ├── __init__.py
-│   └── triage_prompts.py          # Medical triage prompt templates
-│
-├── utils/
-│   ├── __init__.py
-│   ├── whisper_client.py          # Speech-to-text integration
-│   └── facility_matcher.py        # Geolocation and clinic search
-│
-├── frontend/
-│   ├── src/
-│   │   ├── components/            # React components
-│   │   ├── App.tsx                # Main app component
-│   │   └── main.tsx               # App entry point
-│   ├── package.json               # Frontend dependencies
-│   └── vite.config.ts             # Vite configuration
-│
-└── tests/
-    ├── test_triage.py             # Unit tests for triage agent
-    └── test_golden_dataset.py     # Tests for the golden dataset
-```
-
-### Dependencies (requirements.txt)
-```txt
-# Core Framework
-fastapi>=0.100.0
-uvicorn>=0.22.0
-langchain>=0.1.0
-langchain-groq>=0.1.0
-langchain-community>=0.1.0
-
-# LLM & Embeddings
-groq>=0.4.0
-
-# Data Validation
-pydantic>=2.0.0
-pydantic-settings>=2.0.0
-
-# Speech Processing
-openai-whisper>=20230918
-sounddevice>=0.4.6    # For audio recording
-
-# Geolocation
-geopy>=2.4.0
-folium>=0.15.0        # Interactive maps
-
-# Utilities
-python-dotenv>=1.0.0
-requests>=2.31.0
-
-# Development
-pytest>=7.4.0         # Testing framework
-black>=23.0.0         # Code formatting
-```
+-   **Phase 1 (Q1 2025):** Pilot deployment in 5 Primary Health Centers.
+-   **Phase 2 (Q2 2025):** Add more Indic languages and integrate with telemedicine platforms.
+-   **Phase 3 (Q3 2025):** Implement RAG with ICMR guidelines and add medical history context.
+-   **Phase 4 (2026):** Scale to 100+ PHCs and partner with government health programs.

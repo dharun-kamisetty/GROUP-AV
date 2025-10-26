@@ -18,8 +18,8 @@ load_dotenv()
 class AroviaTriageAgent:
     """Main Arovia triage agent combining voice input, AI reasoning, and medical assessment"""
     
-    def __init__(self, groq_api_key: Optional[str] = None, whisper_model: str = "small"):
-    # def __init__(self, groq_api_key: Optional[str] = None, whisper_model: str = "large-v3"):
+    #def __init__(self, groq_api_key: Optional[str] = None, whisper_model: str = "small"):
+    def __init__(self, groq_api_key: Optional[str] = None, whisper_model: str = "large-v3"):
         """
         Initialize Arovia triage agent
         
