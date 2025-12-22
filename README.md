@@ -438,7 +438,7 @@ In case of emergency, call 108 immediately.
 ### Medical Device Classification
 - **India**: Likely Class A/B (low risk) under Medical Device Rules 2017
 - **Purpose**: Clinical decision support tool, not diagnostic device
-- **Validation**: Tested against validated clinical vignettes
+- **Validation**: Yet to be Tested against validated clinical vignettes
 
 ---
 
@@ -463,33 +463,6 @@ In case of emergency, call 108 immediately.
 | Urgent Cases | 10 scenarios | 90% appropriate triage |
 | Standard Cases | 10 scenarios | 85% correct assessment |
 
----
-
-## 🚀 Future Roadmap (Post-Hackathon)
-
-### Phase 1: Pilot Deployment (Q1 2025)
-- Deploy in 5 Primary Health Centers in Telangana
-- Collect real-world usage data and feedback
-- Refine urgency scoring based on outcomes
-- Build analytics dashboard for health officers
-
-### Phase 2: Feature Enhancement (Q2 2025)
-- Add 5+ Indic languages (Bengali, Marathi, Gujarati, Kannada, Malayalam)
-- Integrate with eSanjeevani telemedicine platform
-- Build WhatsApp bot for feature phone users
-- Develop mobile app for community health workers
-
-### Phase 3: AI Enhancement (Q3 2025)
-- Implement RAG (Retrieval-Augmented Generation) with ICMR guidelines
-- Add medical history context (returning patients)
-- Predictive analytics for disease outbreak detection
-- Integration with National Health Stack (ABDM)
-
-### Phase 4: Scale (Q4 2025 - 2026)
-- Expand to 100+ PHCs across 5 states
-- Partner with NGOs and government health programs
-- Open-source community ecosystem
-- Research publication on clinical validation
 
 ---
 

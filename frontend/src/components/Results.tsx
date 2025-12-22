@@ -1,14 +1,10 @@
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
-import { 
-  ExclamationTriangleIcon, 
-  HeartIcon, 
-  MapPinIcon,
-  ClockIcon,
-  UserIcon,
-  ShieldCheckIcon
+import {
+  ExclamationTriangleIcon,
+  MapPinIcon
 } from '@heroicons/react/24/outline';
-import { TriageResult, Facility } from '../types';
+import type { TriageResult, Facility } from '../types';
 
 interface ResultsProps {
   triageResult: TriageResult | null;
@@ -111,14 +107,14 @@ const Results: React.FC<ResultsProps> = ({ triageResult, facilities, loading, er
             </p>
             <p className="text-sm text-gray-600">Urgency Score</p>
           </div>
-          
+
           <div className="text-center">
             <div className="text-2xl font-bold text-gray-900">
               {triageResult.recommended_specialty}
             </div>
             <p className="text-sm text-gray-600">Recommended Specialty</p>
           </div>
-          
+
           <div className="text-center">
             <div className={`text-2xl font-bold ${triageResult.emergency_detected ? 'text-red-600' : 'text-green-600'}`}>
               {triageResult.emergency_detected ? 'YES' : 'NO'}
@@ -165,11 +161,10 @@ const Results: React.FC<ResultsProps> = ({ triageResult, facilities, loading, er
                     <div className="font-medium text-yellow-900">{risk.condition}</div>
                     <p className="text-yellow-800 text-sm mt-1">Specialty: {risk.specialty_needed}</p>
                   </div>
-                  <span className={`px-2 py-1 rounded-full text-xs font-medium ${
-                    risk.probability === 'high' ? 'bg-red-100 text-red-800' :
-                    risk.probability === 'medium' ? 'bg-yellow-100 text-yellow-800' :
-                    'bg-green-100 text-green-800'
-                  }`}>
+                  <span className={`px-2 py-1 rounded-full text-xs font-medium ${risk.probability === 'high' ? 'bg-red-100 text-red-800' :
+                      risk.probability === 'medium' ? 'bg-yellow-100 text-yellow-800' :
+                        'bg-green-100 text-green-800'
+                    }`}>
                     {risk.probability} probability
                   </span>
                 </div>

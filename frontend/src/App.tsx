@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import { useState } from 'react';
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import Header from './components/Header';
 import Dashboard from './components/Dashboard';
@@ -6,7 +6,8 @@ import TriageForm from './components/TriageForm';
 import VoiceInput from './components/VoiceInput';
 import Facilities from './components/Facilities';
 import Results from './components/Results';
-import { TriageResult, Facility } from './types';
+import Disclaimer from './components/Disclaimer';
+import type { TriageResult, Facility } from './types';
 
 const API_BASE_URL = 'http://localhost:8000';
 
@@ -19,7 +20,7 @@ function App() {
   const handleTriageSubmit = async (symptoms: string, location?: string) => {
     setLoading(true);
     setError(null);
-    
+
     try {
       const response = await fetch(`${API_BASE_URL}/triage/text`, {
         method: 'POST',
@@ -64,7 +65,7 @@ function App() {
   const handleVoiceSubmit = async (audioBlob: Blob, language: string) => {
     setLoading(true);
     setError(null);
-    
+
     try {
       const formData = new FormData();
       formData.append('audio_file', audioBlob, 'recording.wav');
@@ -91,13 +92,14 @@ function App() {
 
   return (
     <Router>
-      <div className="min-h-screen bg-gray-50">
+      <div className="min-h-screen bg-gray-50 pb-16"> {/* Added padding bottom to prevent footer overlap */}
+        <Disclaimer />
         <Header />
-        
+
         <main className="container mx-auto px-4 py-8">
           <Routes>
             <Route path="/" element={
-              <Dashboard 
+              <Dashboard
                 onTriageSubmit={handleTriageSubmit}
                 onVoiceSubmit={handleVoiceSubmit}
                 loading={loading}
@@ -105,27 +107,27 @@ function App() {
               />
             } />
             <Route path="/triage" element={
-              <TriageForm 
+              <TriageForm
                 onSubmit={handleTriageSubmit}
                 loading={loading}
                 error={error}
               />
             } />
             <Route path="/voice" element={
-              <VoiceInput 
+              <VoiceInput
                 onSubmit={handleVoiceSubmit}
                 loading={loading}
                 error={error}
               />
             } />
             <Route path="/facilities" element={
-              <Facilities 
+              <Facilities
                 facilities={facilities}
                 loading={loading}
               />
             } />
             <Route path="/results" element={
-              <Results 
+              <Results
                 triageResult={triageResult}
                 facilities={facilities}
                 loading={loading}

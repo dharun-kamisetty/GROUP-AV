@@ -1,5 +1,9 @@
 import time
+import sys
+import os
+sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
 from agents.triage_agent import AroviaTriageAgent
+
 
 def performance_test():
     """Measures the end-to-end latency of the triage process."""
@@ -7,6 +11,8 @@ def performance_test():
     test_cases = [
         "I have a slight headache and a runny nose.",
         "I have had a high fever and a bad cough for three days.",
+        "I am not able to eat pizza",
+        "Can you book me a ticket",
         "I have severe chest pain and I am short of breath.",
     ]
 

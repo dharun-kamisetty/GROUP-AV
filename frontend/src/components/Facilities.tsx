@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
-import { MapPinIcon, PhoneIcon, ClockIcon, StarIcon } from '@heroicons/react/24/outline';
-import { Facility } from '../types';
+import { MapPinIcon, PhoneIcon, ClockIcon } from '@heroicons/react/24/outline';
+import type { Facility } from '../types';
 
 interface FacilitiesProps {
   facilities: Facility[];
@@ -125,12 +125,12 @@ const Facilities: React.FC<FacilitiesProps> = ({ facilities, loading }) => {
                       </span>
                     )}
                   </div>
-                  
+
                   <div className="flex items-center text-gray-600 mb-2">
                     <MapPinIcon className="w-4 h-4 mr-1" />
                     <span className="text-sm">{facility.address}</span>
                   </div>
-                  
+
                   <div className="flex items-center space-x-4 text-sm text-gray-600">
                     <span className="flex items-center">
                       <ClockIcon className="w-4 h-4 mr-1" />
@@ -139,7 +139,7 @@ const Facilities: React.FC<FacilitiesProps> = ({ facilities, loading }) => {
                     <span className="text-blue-600 font-medium">{facility.specialty_match}</span>
                   </div>
                 </div>
-                
+
                 <div className="text-right">
                   <div className="text-2xl font-bold text-primary-600">
                     #{index + 1}
@@ -183,7 +183,7 @@ const Facilities: React.FC<FacilitiesProps> = ({ facilities, loading }) => {
                     View on Map →
                   </a>
                 </div>
-                
+
                 <div className="flex space-x-2">
                   <button className="btn-secondary text-sm">
                     Save

@@ -3,6 +3,8 @@
 Test script for Arovia Facility Matching functionality
 """
 import os
+import sys
+sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
 from dotenv import load_dotenv
 from agents.triage_agent import AroviaTriageAgent
 

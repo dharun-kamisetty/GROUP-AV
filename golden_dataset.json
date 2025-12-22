@@ -29,5 +29,17 @@
     "expected_urgency": 8,
     "expected_category": "immediate",
     "expected_specialty": "Orthopedics"
+  },
+    {
+    "input": "I think I am rich",
+    "expected_urgency": 0,
+    "expected_category": "standard",
+    "expected_specialty": "No"
+  },
+  {
+    "input": "Im poor",
+    "expected_urgency": 0,
+    "expected_category": "standard",
+    "expected_specialty": "No"
   }
 ]

@@ -2,6 +2,8 @@
 Test script for Arovia triage system
 """
 import os
+import sys
+sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
 from agents.triage_agent import AroviaTriageAgent
 from models.schemas import TriageResult
 

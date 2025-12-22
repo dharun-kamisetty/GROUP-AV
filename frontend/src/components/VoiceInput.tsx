@@ -14,11 +14,10 @@ const VoiceInput: React.FC<VoiceInputProps> = ({ onSubmit, loading, error }) => 
   const [selectedLanguage, setSelectedLanguage] = useState('en');
   const [recordingTime, setRecordingTime] = useState(0);
   const [audioBlob, setAudioBlob] = useState<Blob | null>(null);
-  const [transcription, setTranscription] = useState('');
-  
+
   const mediaRecorderRef = useRef<MediaRecorder | null>(null);
   const audioChunksRef = useRef<Blob[]>([]);
-  const timerRef = useRef<NodeJS.Timeout | null>(null);
+  const timerRef = useRef<ReturnType<typeof setInterval> | null>(null);
 
   const languages = [
     { code: 'en', name: 'English' },
@@ -55,7 +54,7 @@ const VoiceInput: React.FC<VoiceInputProps> = ({ onSubmit, loading, error }) => 
       mediaRecorder.start();
       setIsRecording(true);
       setRecordingTime(0);
-      
+
       // Start timer
       timerRef.current = setInterval(() => {
         setRecordingTime(prev => prev + 1);
