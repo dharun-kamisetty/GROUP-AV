@@ -4,12 +4,10 @@ Streamlit web application for medical triage
 """
 import streamlit as st
 import streamlit.components.v1 as components
-import os
 import time
-from typing import Optional
+from typing import Dict
 from dotenv import load_dotenv
 from agents.triage_agent import AroviaTriageAgent, ReferralNote
-from models.schemas import TriageResult, VoiceInput
 
 # Load environment variables from .env file
 load_dotenv()
@@ -74,12 +72,12 @@ def initialize_agent():
             st.stop()
 
 
-def display_language_selector():
+def display_language_selector() -> Dict[str, str]:
     """Display language selection for voice input"""
     st.subheader("🌐 Language Selection")
     
     if st.session_state.agent:
-        languages = st.session_state.agent.get_supported_languages()
+        languages: Dict[str, str] = st.session_state.agent.get_supported_languages()
         
         # Create two columns for better layout
         col1, col2 = st.columns(2)
@@ -361,12 +359,12 @@ def display_location_input():
         
         # Reverse geocode to get address
         try:
-            from geopy.geocoders import Nominatim
+            from geopy.geocoders import Nominatim  # type: ignore
             geocoder = Nominatim(user_agent="arovia-health-desk")
-            location_data = geocoder.reverse(f"{lat}, {lon}")
+            location_data = geocoder.reverse(f"{lat}, {lon}")  # type: ignore
             
             if location_data:
-                address = location_data.address
+                address: str = location_data.address  # type: ignore
                 st.session_state.user_location = address
                 st.session_state.user_coordinates = (lat, lon)
                 st.success(f"📍 Location detected: {address}")
@@ -573,16 +571,16 @@ def display_recommended_facilities():
     st.markdown(f"**📊 Found {len(facilities)} facilities within your area**")
     
     # Facility type breakdown
-    facility_types = {}
+    facility_types: Dict[str, int] = {}
     for facility in facilities:
-        facility_type = getattr(facility, 'facility_type', 'local')
+        facility_type: str = getattr(facility, 'facility_type', 'local')
         facility_types[facility_type] = facility_types.get(facility_type, 0) + 1
     
     if facility_types:
         st.markdown("**🏥 Facility Types:**")
-        for facility_type, count in facility_types.items():
-            type_emoji = {'government': '🔵', 'private': '🟢', 'ngo': '🟡', 'local': '⚪'}.get(facility_type, '⚪')
-            st.markdown(f"• {type_emoji} {facility_type.title()}: {count}")
+        for ftype, count in facility_types.items():
+            type_emoji = {'government': '🔵', 'private': '🟢', 'ngo': '🟡', 'local': '⚪'}.get(ftype, '⚪')
+            st.markdown(f"• {type_emoji} {ftype.title()}: {count}")
 
 
 def display_referral_note():
@@ -640,7 +638,7 @@ Triage Category: {triage.triage_category.upper()}
     else:
         note += "• None identified\n"
     
-    note += f"""
+    note += """
 🏥 RECOMMENDED FACILITIES:
 """
     
@@ -748,7 +746,7 @@ def main():
         st.markdown("### 🌐 Supported Languages")
         if st.session_state.agent:
             languages = st.session_state.agent.get_supported_languages()
-            for lang, code in list(languages.items())[:10]:  # Show first 10
+            for lang in list(languages.keys())[:10]:  # Show first 10
                 st.markdown(f"• {lang.title()}")
 
 

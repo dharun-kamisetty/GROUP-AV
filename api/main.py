@@ -80,7 +80,7 @@ async def startup_event():
         print("✅ Triage agent initialized")
         
         # Initialize whisper client
-        whisper_client = WhisperClient(model_size="medium")
+        whisper_client = WhisperClient(model_size="small")
         print("✅ Whisper client initialized")
         
         print("🎉 Arovia Health Desk API ready!")

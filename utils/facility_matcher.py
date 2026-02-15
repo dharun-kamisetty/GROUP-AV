@@ -19,11 +19,15 @@ class FacilityMatcher:
     def __init__(self):
         """Initialize facility matcher with Google Maps client"""
         api_key = os.getenv("GOOGLE_MAPS_API_KEY")
-        if not api_key:
-            print("Warning: GOOGLE_MAPS_API_KEY not found in environment variables")
+        if not api_key or api_key.startswith("your_"):
+            print("Warning: GOOGLE_MAPS_API_KEY not configured. Facility search will be limited.")
             self.client = None
         else:
-            self.client = googlemaps.Client(key=api_key)
+            try:
+                self.client = googlemaps.Client(key=api_key)
+            except ValueError as e:
+                print(f"Warning: Invalid GOOGLE_MAPS_API_KEY: {e}. Facility search will be limited.")
+                self.client = None
         
         # Medical specialty mappings
         self.specialty_mappings = {

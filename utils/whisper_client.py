@@ -47,8 +47,7 @@ class WhisperClient:
         "maithili": "mai",
         "santali": "sat"
     }
-    #def __init__(self, model_size: str = "small"):
-    def __init__(self, model_size: str = "medium"):
+    def __init__(self, model_size: str = "small"):
         """
         Initialize Whisper client
         

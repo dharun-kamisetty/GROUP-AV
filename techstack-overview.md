@@ -9,7 +9,7 @@ ArovIA is an intelligent, voice-first medical triage assistant designed to provi
 Our platform is built on a modern, robust technology stack chosen for performance, scalability, and cutting-edge AI capabilities.
 
 *   **Frontend:**
-    *   **React & TypeScript:** For building a responsive, type-safe, and interactive user interface.
+    *   **React.js:** For building a responsive, component-based, and interactive user interface.
     *   **Vite:** A next-generation frontend tooling that provides a faster and leaner development experience.
     *   **Tailwind CSS:** A utility-first CSS framework for rapidly building custom designs.
 
