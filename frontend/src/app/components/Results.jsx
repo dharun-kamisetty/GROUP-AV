@@ -4,11 +4,11 @@ import { Button } from './ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from './ui/card';
 import { Badge } from './ui/badge';
 import { Alert, AlertDescription } from './ui/alert';
-import { 
-  Download, 
-  MapPin, 
-  AlertTriangle, 
-  CheckCircle2, 
+import {
+  Download,
+  MapPin,
+  AlertTriangle,
+  CheckCircle2,
   Home,
   Phone
 } from 'lucide-react';
@@ -74,7 +74,7 @@ export function Results() {
                     <AlertTriangle className="h-8 w-8 text-white" />
                   </motion.div>
                   <AlertDescription className="text-white font-bold text-lg">
-                    EMERGENCY DETECTED - Please call 108 immediately or visit the nearest emergency department!
+                    {t('results.emergencyCall') || "EMERGENCY DETECTED - Please call 108 immediately!"}
                   </AlertDescription>
                 </div>
               </Alert>
@@ -83,7 +83,7 @@ export function Results() {
               <a href="tel:108" className="flex-1">
                 <Button variant="destructive" size="lg" className="w-full text-lg bg-red-600 hover:bg-red-700 shadow-lg rounded-xl">
                   <Phone className="w-5 h-5 mr-2" />
-                  Call 108 Now
+                  {t('landing.call108Now') || "Call 108 Now"}
                 </Button>
               </a>
               <Button
@@ -93,7 +93,7 @@ export function Results() {
                 className="flex-1 border-2 border-red-500 text-red-600 hover:bg-red-50 dark:hover:bg-red-900/20 rounded-xl"
               >
                 <MapPin className="w-5 h-5 mr-2" />
-                Find Emergency Room
+                {t('results.findER') || "Find Emergency Room"}
               </Button>
             </div>
           </motion.div>
@@ -130,20 +130,19 @@ export function Results() {
                           initial={{ scaleY: 0 }}
                           animate={{ scaleY: 1 }}
                           transition={{ delay: 0.3 + i * 0.05 }}
-                          className={`flex-1 h-8 rounded-md ${
-                            i < result.urgencyScore
-                              ? result.urgencyScore >= 8
-                                ? 'bg-gradient-to-t from-red-600 to-red-400'
-                                : result.urgencyScore >= 6
+                          className={`flex-1 h-8 rounded-md ${i < result.urgencyScore
+                            ? result.urgencyScore >= 8
+                              ? 'bg-gradient-to-t from-red-600 to-red-400'
+                              : result.urgencyScore >= 6
                                 ? 'bg-gradient-to-t from-orange-600 to-orange-400'
                                 : 'bg-gradient-to-t from-yellow-600 to-yellow-400'
-                              : 'bg-slate-200 dark:bg-slate-700'
-                          }`}
+                            : 'bg-slate-200 dark:bg-slate-700'
+                            }`}
                         />
                       ))}
                     </div>
                     <p className="text-sm text-slate-500 dark:text-slate-400 mt-1">
-                      Score: {result.urgencyScore}/10
+                      {t('results.score') || "Score"}: {result.urgencyScore}/10
                     </p>
                   </div>
                 </div>
@@ -198,14 +197,14 @@ export function Results() {
               {result.specialtyRecommended && (
                 <div className="p-4 bg-violet-50/80 dark:bg-violet-900/15 rounded-xl border border-violet-200/50 dark:border-violet-800/30">
                   <p className="text-sm text-violet-800 dark:text-violet-300">
-                    <strong>Recommended Specialty:</strong> {result.specialtyRecommended}
+                    <strong>{t('results.recommendedSpecialty') || "Recommended Specialty"}:</strong> {result.specialtyRecommended}
                   </p>
                 </div>
               )}
 
               {/* Symptoms Summary */}
               <div>
-                <h3 className="font-semibold mb-2 text-slate-800 dark:text-slate-200">Your Symptoms:</h3>
+                <h3 className="font-semibold mb-2 text-slate-800 dark:text-slate-200">{t('results.yourSymptoms') || "Your Symptoms"}:</h3>
                 <p className="text-slate-700 dark:text-slate-300 p-4 bg-slate-100/80 dark:bg-slate-900/40 rounded-xl border border-slate-200/50 dark:border-slate-700/40">
                   {symptoms}
                 </p>

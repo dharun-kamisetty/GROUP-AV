@@ -8,7 +8,7 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from './ui/dropdown-menu';
-import { SUPPORTED_LANGUAGES } from '../i18n';
+import { SUPPORTED_LANGUAGES } from '../../i18n';
 import { motion } from 'motion/react';
 import { useTheme } from '../contexts/ThemeContext';
 
@@ -52,7 +52,7 @@ export function Header({ urgencyScore, emergencyDetected }) {
                 <Activity className="w-5 h-5 text-white" />
               </div>
               <span className="font-bold text-lg text-slate-800 dark:text-white">
-                Arovia Health Desk
+                {t('appName')}
               </span>
             </div>
           </div>

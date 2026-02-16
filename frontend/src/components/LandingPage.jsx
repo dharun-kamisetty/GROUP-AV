@@ -1,178 +1,203 @@
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
-import { ArrowRight, Activity, ShieldCheck, Globe, ChevronRight } from 'lucide-react';
+import { useTranslation } from 'react-i18next';
+import {
+    HeartIcon,
+    ShieldCheckIcon,
+    UserGroupIcon,
+    ClockIcon,
+    ArrowRightIcon,
+    MicrophoneIcon,
+    MapPinIcon,
+    DocumentTextIcon
+} from '@heroicons/react/24/outline';
 
 const LandingPage = () => {
     const navigate = useNavigate();
+    const { t } = useTranslation();
+
+    const stats = [
+        {
+            value: t('landing.stat1Value'),
+            title: t('landing.stat1Title'),
+            desc: t('landing.stat1Desc'),
+            icon: UserGroupIcon,
+            color: "blue"
+        },
+        {
+            value: t('landing.stat2Value'),
+            title: t('landing.stat2Title'),
+            desc: t('landing.stat2Desc'),
+            icon: ClockIcon,
+            color: "orange"
+        },
+        {
+            value: t('landing.stat3Value'),
+            title: t('landing.stat3Title'),
+            desc: t('landing.stat3Desc'),
+            icon: HeartIcon,
+            color: "red"
+        }
+    ];
+
+    const features = [
+        {
+            title: t('landing.feature1Title'),
+            description: t('landing.feature1Desc'),
+            icon: HeartIcon,
+            color: "text-red-500",
+            bg: "bg-red-50"
+        },
+        {
+            title: t('landing.feature2Title'),
+            description: t('landing.feature2Desc'),
+            icon: ShieldCheckIcon,
+            color: "text-blue-500",
+            bg: "bg-blue-50"
+        },
+        {
+            title: t('landing.feature3Title'),
+            description: t('landing.feature3Desc'),
+            icon: MicrophoneIcon,
+            color: "text-purple-500",
+            bg: "bg-purple-50"
+        },
+        {
+            title: t('landing.feature4Title'),
+            description: t('landing.feature4Desc'),
+            icon: MapPinIcon,
+            color: "text-green-500",
+            bg: "bg-green-50"
+        },
+        {
+            title: t('landing.feature5Title'),
+            description: t('landing.feature5Desc'),
+            icon: DocumentTextIcon,
+            color: "text-orange-500",
+            bg: "bg-orange-50"
+        }
+    ];
 
     return (
-        <div className="flex flex-col min-h-screen">
+        <div className="min-h-screen bg-white">
             {/* Hero Section */}
-            <section className="relative bg-gradient-to-b from-blue-50 to-white pt-20 pb-32 overflow-hidden">
-                <div className="container mx-auto px-4 relative z-10">
-                    <div className="max-w-4xl mx-auto text-center">
-                        <div className="inline-flex items-center rounded-full px-3 py-1 text-sm font-medium bg-blue-100 text-blue-800 mb-8 animate-fade-in-up">
-                            <span className="flex h-2 w-2 rounded-full bg-blue-600 mr-2"></span>
-                            Arovia Health Logic v1.0 Live
-                        </div>
-                        <h1 className="text-5xl md:text-7xl font-extrabold tracking-tight text-gray-900 mb-8 animate-fade-in-up delay-100">
-                            Intelligent Triage for <br />
-                            <span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-600 to-teal-500">
-                                Every Citizen
-                            </span>
-                        </h1>
-                        <p className="mt-4 text-xl text-gray-600 mb-10 max-w-2xl mx-auto animate-fade-in-up delay-200">
-                            Revolutionizing first-point healthcare access in India.
-                            AI-powered assessments, multilingual voice support, and instant facility matching.
-                        </p>
-                        <div className="flex flex-col sm:flex-row justify-center gap-4 animate-fade-in-up delay-300">
-                            <button
-                                onClick={() => navigate('/app')}
-                                className="inline-flex items-center justify-center px-8 py-4 border border-transparent text-lg font-medium rounded-xl text-white bg-blue-600 hover:bg-blue-700 shadow-lg hover:shadow-xl transition-all duration-200 transform hover:-translate-y-1"
-                            >
-                                Start Assessment <ArrowRight className="ml-2 h-5 w-5" />
-                            </button>
-                            <button
-                                onClick={() => document.getElementById('features')?.scrollIntoView({ behavior: 'smooth' })}
-                                className="inline-flex items-center justify-center px-8 py-4 border border-gray-200 text-lg font-medium rounded-xl text-gray-700 bg-white hover:bg-gray-50 shadow-sm hover:shadow-md transition-all duration-200"
-                            >
-                                Learn More
-                            </button>
-                        </div>
+            <div className="relative overflow-hidden bg-gradient-to-b from-blue-50/50 to-white pt-16 pb-24">
+                <div className="absolute top-0 left-0 w-full h-full bg-[url('https://grainy-gradients.vercel.app/noise.svg')] opacity-20"></div>
+
+                <div className="container mx-auto px-4 relative z-10 text-center">
+                    <div className="inline-flex items-center px-4 py-2 rounded-full bg-blue-100/50 border border-blue-200 text-blue-700 text-sm font-medium mb-8 animate-fade-in-up">
+                        <span className="flex h-2 w-2 relative mr-2">
+                            <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-blue-400 opacity-75"></span>
+                            <span className="relative inline-flex rounded-full h-2 w-2 bg-blue-500"></span>
+                        </span>
+                        {t('landing.badge')}
+                    </div>
+
+                    <h1 className="text-5xl md:text-7xl font-bold text-gray-900 mb-6 tracking-tight leading-tight max-w-5xl mx-auto">
+                        {t('landing.heroTitle')}
+                    </h1>
+
+                    <p className="text-xl text-gray-600 mb-10 max-w-2xl mx-auto leading-relaxed">
+                        {t('landing.heroSubtitle')}
+                    </p>
+
+                    <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
+                        <button
+                            onClick={() => navigate('/app')}
+                            className="btn-primary text-lg px-8 py-4 shadow-xl shadow-blue-500/20 hover:shadow-blue-500/30 transform hover:-translate-y-1"
+                        >
+                            {t('landing.startButton')}
+                            <ArrowRightIcon className="w-5 h-5 ml-2" />
+                        </button>
+                        <button className="px-8 py-4 text-gray-600 font-medium hover:text-gray-900 transition-colors">
+                            {t('landing.learnMoreButton')}
+                        </button>
                     </div>
                 </div>
+            </div>
 
-                {/* Abstract Background Shapes */}
-                <div className="absolute top-0 left-0 w-full h-full overflow-hidden z-0">
-                    <div className="absolute -top-24 -left-24 w-96 h-96 rounded-full bg-blue-200 opacity-20 blur-3xl"></div>
-                    <div className="absolute top-1/2 -right-24 w-64 h-64 rounded-full bg-teal-200 opacity-20 blur-3xl"></div>
-                </div>
-            </section>
-
-            {/* Stats / The Problem */}
-            <section className="py-20 bg-white">
+            {/* Stats Section */}
+            <div className="py-20 bg-white border-y border-gray-50">
                 <div className="container mx-auto px-4">
-                    <div className="grid grid-cols-1 md:grid-cols-3 gap-12 text-center divide-y md:divide-y-0 md:divide-x divide-gray-100">
-                        <div className="p-4">
-                            <div className="text-4xl font-bold text-gray-900 mb-2">1:1,445</div>
-                            <div className="text-sm font-semibold uppercase tracking-wide text-gray-500">Doctor-to-Patient Ratio</div>
-                            <p className="mt-2 text-gray-600">Well below the WHO recommendation of 1:1,000, leading to severe access gaps.</p>
-                        </div>
-                        <div className="p-4">
-                            <div className="text-4xl font-bold text-gray-900 mb-2">2-4 hrs</div>
-                            <div className="text-sm font-semibold uppercase tracking-wide text-gray-500">Average Wait Time</div>
-                            <p className="mt-2 text-gray-600">For basic consultations in public facilities, delaying critical care.</p>
-                        </div>
-                        <div className="p-4">
-                            <div className="text-4xl font-bold text-gray-900 mb-2">10 min</div>
-                            <div className="text-sm font-semibold uppercase tracking-wide text-gray-500">Door-to-Triage</div>
-                            <p className="mt-2 text-gray-600">Manual processes slow down identification of emergency cases.</p>
-                        </div>
+                    <div className="grid md:grid-cols-3 gap-8">
+                        {stats.map((stat, index) => (
+                            <div key={index} className="group p-8 rounded-3xl bg-gray-50 hover:bg-white border border-gray-100 hover:border-blue-100 hover:shadow-xl transition-all duration-300">
+                                <div className={`w-12 h-12 rounded-2xl flex items-center justify-center mb-6 bg-${stat.color}-100 text-${stat.color}-600 group-hover:scale-110 transition-transform`}>
+                                    <stat.icon className="w-6 h-6" />
+                                </div>
+                                <div className="text-4xl font-bold text-gray-900 mb-2">{stat.value}</div>
+                                <div className="text-sm font-semibold uppercase tracking-wide text-gray-500">{stat.title}</div>
+                                <p className="mt-2 text-gray-600">{stat.desc}</p>
+                            </div>
+                        ))}
                     </div>
                 </div>
-            </section>
+            </div>
 
             {/* Features Grid */}
-            <section id="features" className="py-24 bg-gray-50">
+            <div className="py-24 bg-gray-50/50">
                 <div className="container mx-auto px-4">
                     <div className="text-center max-w-3xl mx-auto mb-16">
-                        <h2 className="text-3xl font-bold text-gray-900 sm:text-4xl">
-                            Healthcare Intelligence at Scale
-                        </h2>
-                        <p className="mt-4 text-lg text-gray-600">
-                            Arovia combines clinical protocols with advanced AI to bridge the gap between patients and care.
-                        </p>
+                        <h2 className="text-3xl font-bold text-gray-900 mb-4">{t('landing.featuresTitle')}</h2>
+                        <p className="text-gray-600 text-lg">{t('landing.featuresSubtitle')}</p>
                     </div>
 
-                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-                        {/* Feature 1 */}
-                        <div className="bg-white rounded-2xl p-8 shadow-sm hover:shadow-md transition-shadow">
-                            <div className="h-12 w-12 bg-blue-100 rounded-xl flex items-center justify-center text-blue-600 mb-6">
-                                <Activity className="h-6 w-6" />
+                    <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
+                        {features.map((feature, index) => (
+                            <div key={index} className="bg-white p-8 rounded-3xl border border-gray-100 hover:border-blue-100 hover:shadow-lg transition-all duration-300">
+                                <div className={`w-14 h-14 rounded-2xl flex items-center justify-center mb-6 ${feature.bg} ${feature.color}`}>
+                                    <feature.icon className="w-7 h-7" />
+                                </div>
+                                <h3 className="text-xl font-bold text-gray-900 mb-3">{feature.title}</h3>
+                                <p className="text-gray-600 leading-relaxed">{feature.description}</p>
                             </div>
-                            <h3 className="text-xl font-bold text-gray-900 mb-3">Symptom Triage</h3>
-                            <p className="text-gray-600">
-                                Advanced NLP analyzes symptoms to assess urgency (1-10 scale) and identify potential conditions instantly.
-                            </p>
-                        </div>
+                        ))}
+                    </div>
+                </div>
+            </div>
 
-                        {/* Feature 2 */}
-                        <div className="bg-white rounded-2xl p-8 shadow-sm hover:shadow-md transition-shadow">
-                            <div className="h-12 w-12 bg-red-100 rounded-xl flex items-center justify-center text-red-600 mb-6">
-                                <ShieldCheck className="h-6 w-6" />
-                            </div>
-                            <h3 className="text-xl font-bold text-gray-900 mb-3">Red Flag Detection</h3>
-                            <p className="text-gray-600">
-                                Real-time identification of life-threatening emergencies (Cardiac, Stroke, Trauma) for immediate escalation.
-                            </p>
-                        </div>
+            {/* CTA Section */}
+            <div className="py-24 bg-white">
+                <div className="container mx-auto px-4">
+                    <div className="bg-gradient-to-br from-primary-900 to-primary-800 rounded-[3rem] p-12 md:p-20 text-center text-white relative overflow-hidden">
+                        <div className="absolute top-0 right-0 w-96 h-96 bg-white opacity-5 rounded-full blur-3xl transform translate-x-1/2 -translate-y-1/2"></div>
+                        <div className="absolute bottom-0 left-0 w-96 h-96 bg-blue-400 opacity-10 rounded-full blur-3xl transform -translate-x-1/2 translate-y-1/2"></div>
 
-                        {/* Feature 3 */}
-                        <div className="bg-white rounded-2xl p-8 shadow-sm hover:shadow-md transition-shadow">
-                            <div className="h-12 w-12 bg-teal-100 rounded-xl flex items-center justify-center text-teal-600 mb-6">
-                                <Globe className="h-6 w-6" />
-                            </div>
-                            <h3 className="text-xl font-bold text-gray-900 mb-3">Multilingual Voice</h3>
-                            <p className="text-gray-600">
-                                Speak naturally in Hindi, English, or regional languages. Powered by Whisper for high-accuracy transcription.
-                            </p>
-                        </div>
-                        {/* Feature 4 */}
-                        <div className="bg-white rounded-2xl p-8 shadow-sm hover:shadow-md transition-shadow">
-                            <div className="p-2 mb-4">
-                                <span className="text-4xl">📍</span>
-                            </div>
-                            <h3 className="text-xl font-bold text-gray-900 mb-3">Smart Matching</h3>
-                            <p className="text-gray-600">
-                                Geolocation-based search connects patients to the nearest appropriate facilities (Govt, NGO, Private).
-                            </p>
-                        </div>
-                        {/* Feature 5 */}
-                        <div className="bg-white rounded-2xl p-8 shadow-sm hover:shadow-md transition-shadow">
-                            <div className="p-2 mb-4">
-                                <span className="text-4xl">📄</span>
-                            </div>
-                            <h3 className="text-xl font-bold text-gray-900 mb-3">Referral Notes</h3>
-                            <p className="text-gray-600">
-                                Generates structured medical summaries for seamless handoffs to doctors, reducing administrative burden.
-                            </p>
-                        </div>
-                        {/* Feature 6 */}
-                        <div className="bg-gradient-to-br from-blue-600 to-teal-600 rounded-2xl p-8 shadow-lg text-white flex flex-col justify-center items-center text-center">
-                            <h3 className="text-2xl font-bold mb-4">Ready to try?</h3>
-                            <p className="mb-6 opacity-90">Experience the future of triage today.</p>
+                        <div className="relative z-10 max-w-3xl mx-auto">
+                            <h2 className="text-4xl md:text-5xl font-bold mb-6">{t('landing.feature6Title')}</h2>
+                            <p className="text-xl text-blue-100 mb-10">{t('landing.feature6Subtitle')}</p>
                             <button
                                 onClick={() => navigate('/app')}
-                                className="inline-flex items-center px-6 py-3 border border-transparent text-base font-medium rounded-lg text-blue-600 bg-white hover:bg-gray-50 transition-colors"
+                                className="bg-white text-primary-900 text-lg font-bold px-10 py-4 rounded-xl hover:bg-blue-50 hover:scale-105 transition-all duration-300 shadow-xl"
                             >
-                                Launch Dashboard <ChevronRight className="ml-2 h-5 w-5" />
+                                {t('landing.feature6Button')}
                             </button>
                         </div>
                     </div>
                 </div>
-            </section>
+            </div>
 
             {/* Footer */}
-            <footer className="bg-gray-900 text-white py-12 mt-auto">
+            <footer className="bg-gray-50 border-t border-gray-200 py-12">
                 <div className="container mx-auto px-4">
-                    <div className="flex flex-col md:flex-row justify-between items-center">
-                        <div className="mb-6 md:mb-0">
-                            <div className="flex items-center space-x-2 text-2xl font-bold">
-                                <div className="w-8 h-8 bg-blue-500 rounded-lg flex items-center justify-center">
-                                    <span className="text-white text-lg">A</span>
-                                </div>
-                                <span>Arovia</span>
+                    <div className="flex flex-col md:flex-row justify-between items-center gap-6">
+                        <div className="flex items-center gap-3">
+                            <div className="w-10 h-10 bg-primary-600 rounded-xl flex items-center justify-center text-white">
+                                <HeartIcon className="w-6 h-6" />
                             </div>
-                            <p className="text-gray-400 mt-2 text-sm">AI-Powered Health Triage Agent</p>
+                            <div>
+                                <h3 className="font-bold text-gray-900">{t('landing.footerTitle')}</h3>
+                                <p className="text-sm text-gray-500">{t('landing.footerSubtitle')}</p>
+                            </div>
                         </div>
-                        <div className="flex space-x-8 text-gray-400">
-                            <span className="hover:text-white cursor-pointer">Privacy</span>
-                            <span className="hover:text-white cursor-pointer">Terms</span>
-                            <span className="hover:text-white cursor-pointer">Contact</span>
+                        <div className="flex gap-8 text-sm text-gray-600 font-medium">
+                            <a href="#" className="hover:text-primary-600 transition-colors">{t('landing.footerPrivacy')}</a>
+                            <a href="#" className="hover:text-primary-600 transition-colors">{t('landing.footerTerms')}</a>
+                            <a href="#" className="hover:text-primary-600 transition-colors">{t('landing.footerContact')}</a>
                         </div>
-                    </div>
-                    <div className="border-t border-gray-800 mt-8 pt-8 text-center text-gray-500 text-sm">
-                        &copy; {new Date().getFullYear()} Arovia Health. All rights reserved.
+                        <div className="text-sm text-gray-500">
+                            &copy; {new Date().getFullYear()} {t('landing.footerCopyright')}
+                        </div>
                     </div>
                 </div>
             </footer>

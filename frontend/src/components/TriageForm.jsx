@@ -1,9 +1,11 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { DocumentTextIcon, MapPinIcon } from '@heroicons/react/24/outline';
+import { useTranslation } from 'react-i18next';
 
 const TriageForm = ({ onSubmit, loading, error }) => {
   const navigate = useNavigate();
+  const { t } = useTranslation();
   const [symptoms, setSymptoms] = useState('');
   const [location, setLocation] = useState('');
   const [coordinates, setCoordinates] = useState(undefined);
@@ -40,11 +42,11 @@ const TriageForm = ({ onSubmit, loading, error }) => {
   };
 
   const exampleSymptoms = [
-    "I have chest pain and shortness of breath",
-    "I have a high fever and headache",
-    "I have severe abdominal pain",
-    "I have difficulty breathing",
-    "I have a persistent cough"
+    t('triageForm.example1'),
+    t('triageForm.example2'),
+    t('triageForm.example3'),
+    t('triageForm.example4'),
+    t('triageForm.example5')
   ];
 
   return (
@@ -55,32 +57,32 @@ const TriageForm = ({ onSubmit, loading, error }) => {
             <DocumentTextIcon className="w-6 h-6 text-blue-600" />
           </div>
           <div>
-            <h1 className="text-2xl font-bold text-gray-900">Symptom Assessment</h1>
-            <p className="text-gray-500 mt-1">Describe your symptoms in detail for AI analysis</p>
+            <h1 className="text-2xl font-bold text-gray-900">{t('triageForm.heading')}</h1>
+            <p className="text-gray-500 mt-1">{t('triageForm.subheading')}</p>
           </div>
         </div>
 
         <form onSubmit={handleSubmit} className="space-y-8">
           <div>
             <label htmlFor="symptoms" className="block text-sm font-semibold text-gray-700 mb-2">
-              Describe your symptoms <span className="text-red-500">*</span>
+              {t('triageForm.symptomsLabel')} <span className="text-red-500">{t('triageForm.required')}</span>
             </label>
             <textarea
               id="symptoms"
               value={symptoms}
               onChange={(e) => setSymptoms(e.target.value)}
-              placeholder="Example: I have a severe headache on the left side, sensitivity to light, and nausea for the past 4 hours..."
+              placeholder={t('triageForm.symptomsPlaceholder')}
               className="input-field h-40 resize-none text-base leading-relaxed bg-gray-50/50"
               required
             />
             <p className="mt-2 text-xs text-gray-400">
-              Be as specific as possible about the pain, duration, and any triggers.
+              {t('triageForm.symptomsHint')}
             </p>
           </div>
 
           <div>
             <label htmlFor="location" className="block text-sm font-semibold text-gray-700 mb-2">
-              Your Location (Optional)
+              {t('triageForm.locationLabel')}
             </label>
             <div className="relative flex items-center">
               <div className="absolute left-3 text-gray-400">
@@ -91,7 +93,7 @@ const TriageForm = ({ onSubmit, loading, error }) => {
                 id="location"
                 value={location}
                 onChange={(e) => setLocation(e.target.value)}
-                placeholder="City, State OR Click to Detect"
+                placeholder={t('triageForm.locationPlaceholder')}
                 className="input-field pl-10 pr-12 bg-gray-50/50"
               />
               <button
@@ -115,7 +117,7 @@ const TriageForm = ({ onSubmit, loading, error }) => {
           {/* Example Symptoms */}
           <div>
             <label className="block text-xs font-semibold text-gray-400 uppercase tracking-wider mb-3">
-              Quick Select Examples
+              {t('triageForm.quickSelectLabel')}
             </label>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
               {exampleSymptoms.map((example, index) => (
@@ -144,7 +146,7 @@ const TriageForm = ({ onSubmit, loading, error }) => {
               onClick={() => navigate('/')}
               className="px-6 py-3 border border-gray-200 text-gray-600 font-medium rounded-xl hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-200 transition-colors"
             >
-              Cancel
+              {t('triageForm.cancelButton')}
             </button>
             <button
               type="submit"
@@ -154,10 +156,10 @@ const TriageForm = ({ onSubmit, loading, error }) => {
               {loading ? (
                 <div className="flex items-center justify-center space-x-2">
                   <div className="animate-spin rounded-full h-5 w-5 border-2 border-white/30 border-t-white"></div>
-                  <span>Analyzing...</span>
+                  <span>{t('triageForm.analyzingButton')}</span>
                 </div>
               ) : (
-                'Start Triage Analysis'
+                t('triageForm.submitButton')
               )}
             </button>
           </div>

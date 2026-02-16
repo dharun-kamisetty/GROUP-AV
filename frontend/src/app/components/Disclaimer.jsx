@@ -28,12 +28,12 @@ export function Disclaimer({ onAccept }) {
             {t('disclaimer.title')}
           </DialogTitle>
         </DialogHeader>
-        
+
         <div className="space-y-4 py-4">
           <p className="text-gray-700 leading-relaxed">
             {t('disclaimer.content')}
           </p>
-          
+
           <div className="p-4 bg-red-50 border border-red-200 rounded-lg">
             <p className="text-red-800 font-semibold">
               {t('disclaimer.emergency')}
@@ -41,13 +41,13 @@ export function Disclaimer({ onAccept }) {
           </div>
 
           <div className="p-4 bg-blue-50 border border-blue-200 rounded-lg">
-            <h4 className="font-semibold mb-2">Important Notes:</h4>
+            <h4 className="font-semibold mb-2">{t('results.importantNotes') || "Important Notes"}:</h4>
             <ul className="list-disc list-inside space-y-1 text-sm text-gray-700">
-              <li>This tool uses AI to provide preliminary medical triage</li>
-              <li>Results are for informational purposes only</li>
-              <li>Always consult with a healthcare professional</li>
-              <li>In emergencies, call 108 immediately</li>
-              <li>Do not delay seeking professional medical care</li>
+              <li>{t('disclaimer.note1') || "This tool uses AI to provide preliminary medical triage"}</li>
+              <li>{t('disclaimer.note2') || "Results are for informational purposes only"}</li>
+              <li>{t('disclaimer.note3') || "Always consult with a healthcare professional"}</li>
+              <li>{t('disclaimer.note4') || t('results.emergencyCall') || "In emergencies, call 108 immediately"}</li>
+              <li>{t('disclaimer.note5') || "Do not delay seeking professional medical care"}</li>
             </ul>
           </div>
         </div>

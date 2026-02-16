@@ -5,11 +5,11 @@ import { Button } from './ui/button';
 import { Card, CardContent } from './ui/card';
 import { Badge } from './ui/badge';
 import { Input } from './ui/input';
-import { 
-  Phone, 
-  MessageCircle, 
-  Navigation, 
-  MapPin, 
+import {
+  Phone,
+  MessageCircle,
+  Navigation,
+  MapPin,
   Clock,
   Star,
   Search,
@@ -58,7 +58,7 @@ export function Facilities() {
   const { t } = useTranslation();
   const location = useLocation();
   const { result } = location.state || {};
-  
+
   const [facilities, setFacilities] = useState([]);
   const [selectedFilter, setSelectedFilter] = useState('all');
   const [searchQuery, setSearchQuery] = useState('');
@@ -92,13 +92,13 @@ export function Facilities() {
 
   // Filter facilities
   const filteredFacilities = facilities.filter(f => {
-    const matchesSearch = searchQuery === '' || 
+    const matchesSearch = searchQuery === '' ||
       f.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
       f.address.toLowerCase().includes(searchQuery.toLowerCase());
-    
-    const matchesFilter = selectedFilter === 'all' || 
+
+    const matchesFilter = selectedFilter === 'all' ||
       f.specialty?.some(s => s.toLowerCase().includes(selectedFilter));
-    
+
     return matchesSearch && matchesFilter;
   });
 
@@ -111,7 +111,7 @@ export function Facilities() {
             {t('facilities.title')}
           </h1>
           <span className="text-sm text-slate-500 dark:text-slate-400 font-medium">
-            {filteredFacilities.length} Results
+            {t('facilities.resultsCount', { count: filteredFacilities.length })}
           </span>
         </div>
 
@@ -133,11 +133,10 @@ export function Facilities() {
             <button
               key={tab.id}
               onClick={() => setSelectedFilter(tab.id)}
-              className={`px-4 py-2 rounded-full text-sm font-medium whitespace-nowrap transition-all ${
-                selectedFilter === tab.id
-                  ? 'bg-cyan-600 text-white'
-                  : 'bg-white dark:bg-slate-900 text-slate-600 dark:text-slate-400 border border-slate-200 dark:border-slate-800 hover:bg-slate-50 dark:hover:bg-slate-800'
-              }`}
+              className={`px-4 py-2 rounded-full text-sm font-medium whitespace-nowrap transition-all ${selectedFilter === tab.id
+                ? 'bg-cyan-600 text-white'
+                : 'bg-white dark:bg-slate-900 text-slate-600 dark:text-slate-400 border border-slate-200 dark:border-slate-800 hover:bg-slate-50 dark:hover:bg-slate-800'
+                }`}
             >
               {tab.label}
             </button>
@@ -153,7 +152,7 @@ export function Facilities() {
           >
             <AlertTriangle className="w-5 h-5 text-red-600 dark:text-red-400" />
             <p className="text-red-700 dark:text-red-400 font-medium text-sm">
-              Emergency detected - Showing emergency facilities first. Call 108 immediately!
+              {t('facilities.emergencyAlert')}
             </p>
           </motion.div>
         )}
@@ -210,9 +209,9 @@ export function Facilities() {
                     {facility.specialty && facility.specialty.length > 0 && (
                       <div className="flex flex-wrap gap-1.5 mb-3">
                         {facility.specialty.slice(0, 3).map((spec) => (
-                          <Badge 
-                            key={spec} 
-                            variant="secondary" 
+                          <Badge
+                            key={spec}
+                            variant="secondary"
                             className="text-xs bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-400 font-medium"
                           >
                             {spec}
@@ -290,7 +289,7 @@ export function Facilities() {
                   attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
                   url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
                 />
-                
+
                 {/* User location marker (blue) */}
                 <Marker position={userLocation} icon={userIcon}>
                   <Popup>
@@ -309,12 +308,12 @@ export function Facilities() {
                       <div className="p-1 min-w-[180px]">
                         <h3 className="font-bold text-sm mb-1">{facility.name}</h3>
                         <p className="text-xs text-gray-600 mb-1">{facility.type}</p>
-                        <p className="text-xs text-gray-500 mb-2">{facility.distance} km away</p>
+                        <p className="text-xs text-gray-500 mb-2">{facility.distance} {t('facilities.distanceUnit') || "km away"}</p>
                         <div className="flex gap-1">
                           <a href={`tel:${facility.phone}`}>
                             <Button size="sm" className="h-7 text-xs px-2 bg-cyan-600 hover:bg-cyan-700">
                               <Phone className="w-3 h-3 mr-1" />
-                              Call
+                              {t('facilities.call') || "Call"}
                             </Button>
                           </a>
                           <Button
@@ -324,7 +323,7 @@ export function Facilities() {
                             onClick={() => getDirections(facility)}
                           >
                             <Navigation className="w-3 h-3 mr-1" />
-                            Go
+                            {t('facilities.go') || "Go"}
                           </Button>
                         </div>
                       </div>

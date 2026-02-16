@@ -9,6 +9,7 @@ import { Header } from './components/Header.jsx';
 import { Footer } from './components/Footer.jsx';
 import { Toaster } from './components/ui/sonner.jsx';
 import { useEffect, useState } from 'react';
+import i18n from '../i18n';
 
 function RootLayout() {
   const location = useLocation();
@@ -30,9 +31,9 @@ function RootLayout() {
 
   return (
     <div className="min-h-screen flex flex-col bg-slate-50 dark:bg-slate-950 transition-colors duration-300">
-      <Header 
-        urgencyScore={urgencyScore} 
-        emergencyDetected={emergencyDetected} 
+      <Header
+        urgencyScore={urgencyScore}
+        emergencyDetected={emergencyDetected}
       />
       <main className="flex-1">
         <Outlet />
@@ -79,9 +80,9 @@ export const router = createBrowserRouter([
             <div className="min-h-screen flex items-center justify-center">
               <div className="text-center">
                 <h1 className="text-4xl font-bold mb-4">404</h1>
-                <p className="text-gray-600">Page not found</p>
+                <p className="text-gray-600">{i18n.t('common.error') || "Page not found"}</p>
                 <a href="/" className="text-blue-600 hover:underline mt-4 inline-block">
-                  Go back home
+                  {i18n.t('triage.breadcrumbHome') || "Go back home"}
                 </a>
               </div>
             </div>

@@ -1,166 +1,287 @@
 import i18n from 'i18next';
 import { initReactI18next } from 'react-i18next';
 import LanguageDetector from 'i18next-browser-languagedetector';
-import Backend from 'i18next-http-backend';
 
-// Helper for minimal translations (in production use separate JSONs)
-const indicTranslations = {
-    // Bengali
-    bn: {
-        title: "অ্যারোভিয়া হেলথ",
-        nav: { dashboard: "ড্যাশবোর্ড", triage: "তriage", voice: "ভয়েস ইনপুট", facilities: "সুবিধাসমূহ", results: "ফলাফল" },
-        dashboard: { welcome: "অ্যারোভিয়া হেলথে স্বাগতম", description: "ভাষার মধ্যে স্মার্ট টগল এবং স্বাস্থ্যসেবা ব্যবস্থাপনা।", start_triage: "লক্ষণ বিশ্লেষণ", voice_assistant: "কণ্ঠ সহকারী" }
-    },
-    // Telugu
-    te: {
-        title: "అరోవియా హెల్త్",
-        nav: { dashboard: "డాష్‌బోర్డ్", triage: "ట్రయేజ్", voice: "వాయిస్ ఇన్‌పుట్", facilities: "సౌకర్యాలు", results: "ఫలితాలు" },
-        dashboard: { welcome: "అరోవియా హెల్త్‌కి స్వాగతం", description: "భాషల మధ్య స్మార్ట్ మార్పిడి మరియు ఆరోగ్య సంరక్షణ నిర్వహణ.", start_triage: "ట్రయేజ్ ప్రారంభించండి", voice_assistant: "వాయిస్ అసిస్టెంట్" }
-    },
-    // Marathi
-    mr: {
-        title: "अरोविया हेल्थ",
-        nav: { dashboard: "डॅशबोर्ड", triage: "ट्राइएज", voice: "व्हॉइस इनपुट", facilities: "सुविधा", results: "निकाल" },
-        dashboard: { welcome: "अरोविया हेल्थ मध्ये आपले स्वागत आहे", description: "भाषांमध्ये स्मार्ट टॉगल आणि सोपी आरोग्य सेवा.", start_triage: "ट्राइएज सुरू करा", voice_assistant: "व्हॉइस असिस्टंट" }
-    },
-    // Tamil
-    ta: {
-        title: "அரோவியா ஹெல்த்",
-        nav: { dashboard: "டாஷ்போர்டு", triage: "ட்ரைஜ்", voice: "குரல் உள்ளீடு", facilities: "வசதிகள்", results: "முடிவுகள்" },
-        dashboard: { welcome: "அரோவியா ஹெல்த்-க்கு வரவேற்கிறோம்", description: "மொழிகளுக்கு இடையே ஸ்மார்ட் மாற்றம் மற்றும் எளிதான சுகாதார மேலாண்மை.", start_triage: "ட்ரைஜை தொடங்கு", voice_assistant: "குரல் உதவியாளர்" }
-    },
-    // Gujarati
-    gu: {
-        title: "એરોવિયા હેલ્થ",
-        nav: { dashboard: "ડેશબોર્ડ", triage: "ટ્રાયજ", voice: "વૉઇસ ઇનપુટ", facilities: "સુવિધાઓ", results: "પરિણામો" },
-        dashboard: { welcome: "એરોવિયા હેલ્થમાં આપનું સ્વાગત છે", description: "ભાષાઓ વચ્ચે સ્માર્ટ ફેરફાર અને સરળ આરોગ્ય સંભાળ.", start_triage: "ટ્રાયજ શરૂ કરો", voice_assistant: "વૉઇસ સહાયક" }
-    },
-    // Kannada
-    kn: {
-        title: "ಅರೋವಿಯಾ ಹೆಲ್ತ್",
-        nav: { dashboard: "ಡ್ಯಾಶ್‌ಬೋರ್ಡ್", triage: "ಟ್ರೈಯೇಜ್", voice: "ಧ್ವನಿ ಇನ್ಪುಟ್", facilities: "ಸೌಲಭ್ಯಗಳು", results: "ಫಲಿತಾಂಶಗಳು" },
-        dashboard: { welcome: "ಅರೋವಿಯಾ ಹೆಲ್ತ್‌ಗೆ ಸುಸ್ವಾಗತ", description: "ಭಾಷೆಗಳ ನಡುವೆ ಸ್ಮಾರ್ಟ್ ಬದಲಾವಣೆ ಮತ್ತು ಸರಳ ಆರೋಗ್ಯ ನಿರ್ವಹಣೆ.", start_triage: "ಟ್ರೈಯೇಜ್ ಪ್ರಾರಂಭಿಸಿ", voice_assistant: "ಧ್ವನಿ ಸಹಾಯಕ" }
-    },
-    // Malayalam
-    ml: {
-        title: "അരോവിയ ഹെൽത്ത്",
-        nav: { dashboard: "ഡാഷ്‌ബോർഡ്", triage: "ട്രയേജ്", voice: "വോയിസ് ഇൻപുട്ട്", facilities: "സൗകര്യങ്ങൾ", results: "ഫലങ്ങൾ" },
-        dashboard: { welcome: "അരോവിയ ഹെൽത്തിലേക്ക് സ്വാഗതം", description: "ഭാഷകൾക്കിടയിൽ ലളിതമായ മാറ്റം, ആരോഗ്യപരിപാലനം.", start_triage: "ട്രയേജ് ആരംഭിക്കുക", voice_assistant: "വോയിസ് അസിസ്റ്റന്റ്" }
-    },
-    // Punjabi
-    pa: {
-        title: "ਐਰੋਵੀਆ ਹੈਲਥ",
-        nav: { dashboard: "ਡੈਸ਼ਬੋਰਡ", triage: "ਟਰਾਇਜ", voice: "ਵੌਇਸ ਇਨਪੁਟ", facilities: "ਸਹੂਲਤਾਂ", results: "ਨਤੀਜੇ" },
-        dashboard: { welcome: "ਐਰੋਵੀਆ ਹੈਲਥ ਵਿੱਚ ਜੀ ਆਇਆਂ ਨੂੰ", description: "ਭਾਸ਼ਾਵਾਂ ਵਿੱਚ ਸਮਾਰਟ ਤਬਦੀਲੀ ਅਤੇ ਸਿਹਤ ਸੰਭਾਲ ਪ੍ਰਬੰਧਨ।", start_triage: "ਟਰਾਇਜ ਸ਼ੁਰੂ ਕਰੋ", voice_assistant: "ਵੌਇਸ ਸਹਾਇਕ" }
-    },
-    // Urdu
-    ur: {
-        title: "اروویا ہیلتھ",
-        nav: { dashboard: "ڈیش بورڈ", triage: "ٹرایج", voice: "وائس ان پٹ", facilities: "سہولیات", results: "نتائج" },
-        dashboard: { welcome: "اروویا ہیلتھ میں خوش آمدید", description: "زبانوں کے درمیان ہوشیار تبدیلی اور صحت کی دیکھ بھال کا انتظام۔", start_triage: "ٹرایج شروع کریں", voice_assistant: "وائس اسسٹنٹ" }
-    },
-    // Odia (Oriya)
-    or: {
-        title: "ଆରୋଭିଆ ହେଲଥ୍",
-        nav: { dashboard: "ଡ୍ୟାସବୋର୍ଡ", triage: "ଟ୍ରାଏଜ୍", voice: "ଭଏସ୍ ଇନପୁଟ୍", facilities: "ସୁବିଧା", results: "ଫଳାଫଳ" },
-        dashboard: { welcome: "ଆରୋଭିଆ ହେଲଥ୍ କୁ ସ୍ୱାଗତ", description: "ଭାଷା ମଧ୍ୟରେ ସ୍ମାର୍ଟ ପରିବର୍ତ୍ତନ ଏବଂ ସ୍ୱାସ୍ଥ୍ୟ ସେବା ପରିଚାଳନା |", start_triage: "ଟ୍ରାଏଜ୍ ଆରମ୍ଭ କରନ୍ତୁ", voice_assistant: "ଭଏସ୍ ସହାୟକ" }
-    }
-};
+// Import all locales
+import { en } from './locales/en';
+import { hi } from './locales/hi';
+import { bn } from './locales/bn';
+import { te } from './locales/te';
+import { mr } from './locales/mr';
+import { ta } from './locales/ta';
+import { gu } from './locales/gu';
+import { kn } from './locales/kn';
+import { ml } from './locales/ml';
+import { pa } from './locales/pa';
+import { or } from './locales/or';
+import { ur } from './locales/ur';
+import { es } from './locales/es';
 
-const commonFeatures = {
-    features: {
-        instant_analysis: "Instant Analysis (AI)",
-        instant_analysis_desc: "AI-based Triage",
-        languages: "Multilingual",
-        languages_desc: "Supports 22+ Languages",
-        secure: "Secure",
-        secure_desc: "Data Privacy Protected"
-    },
-    disclaimer: {
-        title: "Medical Disclaimer",
-        text_full: "This application uses Artificial Intelligence to provide preliminary health triage recommendations. It is NOT a substitute for professional medical advice, diagnosis, or treatment. Always seek the advice of your physician or other qualified health provider with any questions you may have regarding a medical condition. If you think you may have a medical emergency, call your doctor or emergency services immediately.",
-        text_short: "AI-powered assistant. Not a substitute for professional medical advice.",
-        accept: "I Understand & Enter",
-        read_more: "Read Full Disclaimer"
-    }
-};
+const bridge = (locale) => {
+    const trans = locale.translation || {};
+    const l = trans.landing || {};
+    const tf = trans.triageForm || {};
+    const vi = trans.voiceInput || {};
+    const r = trans.results || {};
+    const f = trans.facilities || {};
+    const d = trans.disclaimer || {};
+    const s = trans.settings || {};
 
-// Merge for full objects
-const buildResources = () => {
-    const resources = {
-        en: {
-            translation: {
-                "title": "Arovia Health",
-                "nav": { "dashboard": "Dashboard", "triage": "Triage", "voice": "Voice Input", "facilities": "Facilities", "results": "Results" },
-                ...commonFeatures,
-                "dashboard": {
-                    "welcome": "Welcome to Arovia Health",
-                    "description": "Smart toggling between languages and streamlined healthcare management.",
-                    "start_triage": "Start Triage",
-                    "voice_assistant": "Voice Assistant",
-                    ...commonFeatures
+    return {
+        translation: {
+            ...trans,
+            appName: trans.appName || trans.title || "Arovia Health Desk",
+            header: {
+                ...trans.header,
+                emergency: trans.header?.emergency || r.emergencyTitle || "EMERGENCY",
+                emergency108: trans.header?.emergency108 || r.emergencyCall || "EMERGENCY 108",
+                urgency: trans.header?.urgency || r.urgencyScore || "Urgency Score",
+                changeLanguage: trans.header?.changeLanguage || "Language"
+            },
+            landing: {
+                ...l,
+                trustBadge: l.badge || l.trustBadge || "Trusted by 1M+ Indians",
+                title: l.heroTitle || l.title || "Your Health,",
+                titleHighlight: l.titleHighlight || "Simplified.",
+                tagline: l.heroSubtitle || l.tagline || "Right advice, at the right time.",
+                description: l.heroSubtitle || l.description || "AI-powered medical triage supporting 22 Indian languages. Describe your symptoms via text or voice and get an immediate urgency assessment.",
+                startTriage: l.startButton || l.startTriage || "Start Free Triage",
+                findHospitals: f.heading || l.findHospitals || "Find Hospitals",
+                securePrivate: l.securePrivate || "100% Secure & Private",
+                languagesSupported: l.languagesSupported || "22 Languages Supported",
+                voiceTranscriptionActive: l.voiceTranscriptionActive || "Voice Transcription Active",
+                voiceSample: l.voiceSample || "I have a sharp pain in my upper abdomen...",
+                voiceAssistant: trans.dashboard?.voice_assistant || l.voiceAssistant || "Voice Assistant",
+                howItWorks: l.featuresTitle || l.howItWorks || "How Arovia Works",
+                howItWorksDesc: l.featuresSubtitle || l.howItWorksDesc || "Three simple steps to get medical guidance.",
+                step1Title: l.step1Title || l.feature3Title || "Speak or Type",
+                step1Desc: l.step1Desc || l.feature3Desc || "Tell us what you're feeling in your native language. We support text and voice.",
+                step2Title: l.step2Title || l.feature1Title || "AI Analysis",
+                step2Desc: l.step2Desc || l.feature1Desc || "Our clinical AI assesses your symptoms against medical protocols for Indian health needs.",
+                step3Title: l.step3Title || l.feature5Title || l.feature4Title || "Actionable Guidance",
+                step3Desc: l.step3Desc || l.feature5Desc || l.feature4Desc || "Receive an urgency score and find the best nearby facilities for treatment.",
+                builtForIndia: l.builtForIndia || l.featuresTitle || "Built for India's Healthcare",
+                builtForIndiaDesc: l.builtForIndiaDesc || l.featuresSubtitle || "Advanced technology localized for every citizen.",
+                viewSettings: l.viewSettings || trans.nav?.settings || "View Settings & Accessibility",
+                hospitalFinder: l.hospitalFinder || f.heading || "Hospital Finder",
+                hospitalFinderDesc: l.hospitalFinderDesc || f.subheading || "Locate trauma centers and specialists near you.",
+                browseMap: l.browseMap || f.viewOnMap || "Browse Map",
+                reportHistory: l.reportHistory || trans.nav?.results || "Report History",
+                reportHistoryDesc: l.reportHistoryDesc || "Access your previous triage results and notes.",
+                viewHistory: l.viewHistory || "View History",
+                criticalEmergency: r.emergencyTitle || l.criticalEmergency || "Critical Emergency?",
+                criticalEmergencyDesc: d.textFull || l.criticalEmergencyDesc || "If you are experiencing severe chest pain, heavy bleeding, or difficulty breathing, do not wait for triage results. Call 108 immediately or go to the nearest emergency room.",
+                call108Now: r.emergencyCall || l.call108Now || "CALL 108 NOW",
+                bottomDisclaimer: d.textShort || l.bottomDisclaimer || "Important: This is a triage tool, not a diagnosis. In emergencies, call 108.",
+                features: {
+                    ...l.features,
+                    multilingual: l.features?.multilingual || l.feature3Title || "Multilingual Support",
+                    multilingualDesc: l.features?.multilingualDesc || l.feature3Desc || "Input symptoms in 22+ languages.",
+                    clinical: l.features?.clinical || l.feature1Title || "Clinical Precision",
+                    clinicalDesc: l.features?.clinicalDesc || l.feature1Desc || "Triage logic tuned to prioritize red flags.",
+                    locator: l.features?.locator || l.feature4Title || "Facility Locator",
+                    locatorDesc: l.features?.locatorDesc || l.feature4Desc || "Instantly find specialized hospitals."
                 }
-            }
-        },
-        es: {
-            translation: {
-                "title": "Salud Arovia",
-                "nav": { "dashboard": "Tablero", "triage": "Triaje", "voice": "Entrada de voz", "facilities": "Instalaciones", "results": "Resultados" },
-                ...commonFeatures,
-                "dashboard": {
-                    "welcome": "Bienvenido a Salud Arovia",
-                    "description": "Cambio inteligente entre idiomas.",
-                    "start_triage": "Iniciar Triaje",
-                    "voice_assistant": "Asistente de Voz",
-                    ...commonFeatures
-                }
-            }
-        },
-        hi: {
-            translation: {
-                "title": "एरोविया हेल्थ",
-                "nav": { "dashboard": "डैशबोर्ड", "triage": "ट्राइएज", "voice": "वॉयस इनपुट", "facilities": "সুविधाएं", "results": "परिणाम" },
-                ...commonFeatures,
-                "dashboard": {
-                    "welcome": "एरोविया हेल्थ में आपका स्वागत है",
-                    "description": "भाषाओं के बीच स्मार्ट टॉगलिंग।",
-                    "start_triage": "ट्राइएज शुरू करें",
-                    "voice_assistant": "वॉयस असिस्टेंट",
-                    ...commonFeatures
-                }
+            },
+            footer: {
+                ...trans.footer,
+                copyright: l.footerCopyright || trans.footer?.copyright || "© {{year}} Arovia Health Desk",
+                medicalDisclaimer: trans.footer?.medicalDisclaimer || l.footerPrivacy || "Medical Disclaimer",
+                privacyPolicy: trans.footer?.privacyPolicy || l.footerPrivacy || "Privacy Policy",
+                systemOnline: trans.footer?.systemOnline || "AI Triage System Online",
+                help: trans.footer?.help || "Help"
+            },
+            facilities: {
+                ...f,
+                title: f.title || f.heading || "Nearby Healthcare Facilities",
+                searchPlaceholder: f.searchPlaceholder || "Search hospitals, clinics...",
+                call: f.call || "Call",
+                whatsapp: f.whatsapp || "WhatsApp",
+                directions: f.directions || f.directionsButton || "Directions",
+                go: f.go || "Go",
+                distance: "Distance",
+                distanceUnit: "km away",
+                resultsCount: "{{count}} Results",
+                openNow: f.openNow || f.openingHours || "Open Now",
+                yourLocation: f.yourLocation || f.locationLabel || "Your Location",
+                emergencyAlert: r.emergencyCall || "Emergency detected - Showing emergency facilities first. Call 108 immediately!",
+                noFacilities: "No facilities found. Try adjusting your search or filter."
+            },
+            triage: {
+                ...trans.triage,
+                title: trans.triage?.title || tf.heading || "Describe your symptoms",
+                subtitle: trans.triage?.subtitle || tf.subheading || "Tell us how you're feeling for an accurate assessment.",
+                mainConcernLabel: trans.triage?.mainConcernLabel || tf.symptomsLabel || "What is the main concern?",
+                mainConcernPlaceholder: trans.triage?.mainConcernPlaceholder || tf.symptomsPlaceholder || "e.g. Sharp stomach pain",
+                detailsLabel: trans.triage?.detailsLabel || "Details (Severity, duration, context)",
+                detailsPlaceholder: trans.triage?.detailsPlaceholder || tf.symptomsHint || "Describe when it started...",
+                submitButton: trans.triage?.submitButton || tf.submitButton || "Analyze Symptoms",
+                breadcrumbHome: trans.triage?.breadcrumbHome || "Home",
+                breadcrumbSymptom: trans.triage?.breadcrumbSymptom || tf.heading || "Symptom Assessment",
+                emergencyWarningTitle: r.emergencyTitle || "Not for Emergencies",
+                emergencyWarningDesc: r.criticalEmergencyDesc || d.textShort || "In emergencies, call 108 immediately.",
+                switchToVoice: trans.triage?.switchToVoice || vi.heading || "Switch to Voice Input",
+                textMode: trans.triage?.textMode || "Text Mode",
+                transcriptionPreview: "# TRANSCRIPTION PREVIEW",
+                transcriptionLive: "Live",
+                transcriptionHint: vi.transcriptionPlaceholder || "Your speech will appear here...",
+                locationServicesTitle: f.heading || "Location Services",
+                locationServicesDesc: f.subheading || "Share your location to find hospitals.",
+                locationDetecting: tf.loadingTitle || "Detecting...",
+                locationPlaceholder: f.searchPlaceholder || "Enter city name...",
+                locationSave: f.saveButton || "Save",
+                locationChange: "Change",
+                privacyProtected: "Privacy Protected",
+                aiAssisted: "AI-Assisted Analysis",
+                infoCompleteTitle: tf.heading || "Be Complete & Specific",
+                infoCompleteDesc: tf.symptomsHint || "Include all relevant symptoms.",
+                infoMultilingualTitle: l.feature3Title || "Multilingual Support",
+                infoMultilingualDesc: l.feature3Desc || "Our AI understands 22+ Indian languages."
+            },
+            voice: {
+                ...trans.voice,
+                title: trans.voice?.title || vi.heading || "Listening to you...",
+                subtitle: trans.voice?.subtitle || vi.subheading || "Please describe your symptoms in detail.",
+                transcriptionTitle: trans.voice?.transcriptionTitle || "# Live Transcription",
+                liveBadge: trans.voice?.liveBadge || "LIVE",
+                transcriptionPlaceholder: trans.voice?.transcriptionPlaceholder || vi.transcriptionPlaceholder || "Your speech will appear here...",
+                recordingLanguage: trans.voice?.recordingLanguage || vi.selectLanguage || "Recording language:",
+                resetRecording: trans.voice?.resetRecording || vi.backButton || "Reset Recording",
+                confirmAnalyze: trans.voice?.confirmAnalyze || vi.submitButton || "Confirm & Analyze Symptoms",
+                processing: trans.voice?.processing || vi.processingButton || "Processing...",
+                privacyNote: trans.voice?.privacyNote || trans.landing?.footerPrivacy || "Privacy Note",
+                privacyDesc: trans.voice?.privacyDesc || "Your voice data is processed securely and is never stored.",
+                moreLanguages: "More Languages..."
+            },
+            results: {
+                ...trans.results,
+                title: trans.results?.title || r.heading || "Triage Results",
+                urgencyLevel: trans.results?.urgencyLevel || r.urgencyScore || "Urgency Level",
+                urgencyScore: "Urgency Score",
+                redFlags: trans.results?.redFlags || r.redFlagsTitle || "Red Flags",
+                recommendations: trans.results?.recommendations || r.recommendations || "Recommendations",
+                downloadNote: trans.results?.downloadNote || r.downloadButton || "Download Referral Note",
+                findFacilities: trans.results?.findFacilities || r.nearbyFacilities || "Find Nearby Facilities",
+                newTriage: trans.results?.newTriage || r.newAssessment || "New Triage",
+                immediate: trans.results?.immediate || "Immediate",
+                urgent: trans.results?.urgent || "Urgent",
+                standard: trans.results?.standard || "Standard",
+                yes: trans.results?.yes || "Yes",
+                no: trans.results?.no || "No",
+                critical: "Critical",
+                high: "High",
+                moderate: "Moderate",
+                low: "Low",
+                call108: trans.results?.emergencyCall || "⚠️ CALL 108 IMMEDIATELY",
+                nearestER: trans.results?.emergencyTip3 || "Go to the nearest emergency department",
+                noDrive: trans.results?.emergencyTip1 || "Do not drive yourself",
+                seek2_4: "Seek medical attention within 2-4 hours",
+                visitUrgent: "Visit emergency department or urgent care",
+                monitorClose: "Monitor symptoms closely",
+                schedule24_48: "Schedule a doctor appointment within 24-48 hours",
+                monitorWorsen: "Monitor symptoms and seek care if worsening",
+                restHydrate: "Rest and stay hydrated",
+                selfCare: "Self-care may be appropriate",
+                regularVisit: "Schedule regular doctor visit if symptoms persist",
+                recommendedSpecialty: r.recommendedSpecialty || r.specialty || "Recommended Specialty",
+                yourSymptoms: tf.symptomsLabel || "Your Symptoms",
+                score: r.urgencyScore || "Score"
+            },
+            disclaimer: {
+                ...trans.disclaimer,
+                title: trans.disclaimer?.title || "Medical Disclaimer",
+                content: trans.disclaimer?.textFull || trans.disclaimer?.content,
+                emergency: "If you think you may have a medical emergency, call 108 immediately.",
+                agree: trans.disclaimer?.accept || trans.disclaimer?.agree || "I Understand & Continue",
+                note1: "This tool uses AI to provide preliminary medical triage",
+                note2: "Results are for informational purposes only",
+                note3: "Always consult with a healthcare professional",
+                note4: "In emergencies, call 108 immediately",
+                note5: "Do not delay seeking professional medical care"
+            },
+            common: {
+                ...trans.common,
+                loading: trans.results?.loading || "Loading...",
+                back: trans.common?.back || "Back",
+                error: "Page not found"
             }
         }
     };
-
-    // Add Indic languages
-    Object.entries(indicTranslations).forEach(([code, trans]) => {
-        resources[code] = {
-            translation: {
-                title: trans.title,
-                nav: trans.nav,
-                ...commonFeatures,
-                dashboard: {
-                    ...trans.dashboard,
-                    ...commonFeatures
-                }
-            }
-        };
-    });
-
-    return resources;
 };
 
+const resources = {
+    en: bridge(en),
+    hi: bridge(hi),
+    bn: bridge(bn),
+    te: bridge(te),
+    mr: bridge(mr),
+    ta: bridge(ta),
+    gu: bridge(gu),
+    kn: bridge(kn),
+    ml: bridge(ml),
+    pa: bridge(pa),
+    or: bridge(or),
+    ur: bridge(ur),
+    es: bridge(es)
+};
+
+const storedLanguage = localStorage.getItem('appLanguage');
+const bridgedResources = Object.keys(resources).reduce((acc, lang) => {
+    acc[lang] = resources[lang]; // resources are already bridged
+    return acc;
+}, {});
+
 i18n
-    .use(Backend)
     .use(LanguageDetector)
     .use(initReactI18next)
     .init({
+        resources: bridgedResources,
+        lng: storedLanguage || 'en',
         fallbackLng: 'en',
-        debug: true,
-        resources: buildResources(),
         interpolation: {
             escapeValue: false,
-        }
+        },
+        detection: {
+            order: ['localStorage', 'navigator', 'htmlTag'],
+            caches: ['localStorage'],
+        },
     });
 
+// Persist language change to localStorage
+i18n.on('languageChanged', (lng) => {
+    localStorage.setItem('appLanguage', lng);
+});
+
+export const SUPPORTED_LANGUAGES = [
+    { code: 'en', name: 'English', nativeName: 'English' },
+    { code: 'hi', name: 'Hindi', nativeName: 'हिन्दी' },
+    { code: 'bn', name: 'Bengali', nativeName: 'বাংলা' },
+    { code: 'te', name: 'Telugu', nativeName: 'తెలుగు' },
+    { code: 'mr', name: 'Marathi', nativeName: 'मराठी' },
+    { code: 'ta', name: 'Tamil', nativeName: 'தமிழ்' },
+    { code: 'gu', name: 'Gujarati', nativeName: 'ગુજરાતી' },
+    { code: 'kn', name: 'Kannada', nativeName: 'ಕನ್ನಡ' },
+    { code: 'ml', name: 'Malayalam', nativeName: 'മലയാളం' },
+    { code: 'pa', name: 'Punjabi', nativeName: 'ਪੰਜਾਬੀ' },
+    { code: 'or', name: 'Odia', nativeName: 'ଓଡ଼ିଆ' },
+    { code: 'ur', name: 'Urdu', nativeName: 'اردو' },
+    { code: 'es', name: 'Spanish', nativeName: 'Español' }
+];
+
+export const VOICE_LANGUAGES = [
+    { code: 'en-IN', name: 'English', nativeName: 'English' },
+    { code: 'hi-IN', name: 'Hindi', nativeName: 'हिन्दी' },
+    { code: 'bn-IN', name: 'Bengali', nativeName: 'বাংলা' },
+    { code: 'te-IN', name: 'Telugu', nativeName: 'తెలుగు' },
+    { code: 'mr-IN', name: 'Marathi', nativeName: 'मराठी' },
+    { code: 'ta-IN', name: 'Tamil', nativeName: 'தமிழ்' },
+    { code: 'gu-IN', name: 'Gujarati', nativeName: 'ગુજરાતી' },
+    { code: 'kn-IN', name: 'Kannada', nativeName: 'ಕನ್ನಡ' },
+    { code: 'ml-IN', name: 'Malayalam', nativeName: 'മലയാളం' },
+    { code: 'pa-IN', name: 'Punjabi', nativeName: 'ਪੰਜਾਬੀ' },
+    { code: 'or-IN', name: 'Odia', nativeName: 'ଓଡ଼ିଆ' },
+    { code: 'ur-IN', name: 'Urdu', nativeName: 'اردو' }
+];
+
 export default i18n;
+

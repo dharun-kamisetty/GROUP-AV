@@ -1,16 +1,16 @@
 import { useState, useRef, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useNavigate } from 'react-router';
-import { 
-  Mic, 
-  RotateCcw, 
-  ArrowRight, 
+import {
+  Mic,
+  RotateCcw,
+  ArrowRight,
   Loader2,
   Shield,
   Languages,
   ChevronRight
 } from 'lucide-react';
-import { VOICE_LANGUAGES } from '../i18n';
+import { VOICE_LANGUAGES } from '../../i18n';
 import { analyzeSymptoms } from '../utils/mockData';
 import { toast } from 'sonner';
 import { motion } from 'motion/react';
@@ -40,7 +40,7 @@ export function VoiceInput() {
   useEffect(() => {
     // Check if browser supports speech recognition
     const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
-    
+
     if (SpeechRecognition) {
       recognitionRef.current = new SpeechRecognition();
       recognitionRef.current.continuous = true;
@@ -135,20 +135,20 @@ export function VoiceInput() {
     }
 
     setProcessing(true);
-    
+
     // Stop recording
     if (recognitionRef.current) {
       recognitionRef.current.stop();
     }
     setIsRecording(false);
-    
+
     // Simulate processing
     await new Promise(resolve => setTimeout(resolve, 1000));
-    
+
     const result = analyzeSymptoms(transcription);
-    
+
     setProcessing(false);
-    
+
     navigate('/results', {
       state: { result, symptoms: transcription }
     });
@@ -157,7 +157,7 @@ export function VoiceInput() {
   return (
     <div className="min-h-[calc(100vh-140px)] bg-gradient-to-b from-cyan-50/50 to-slate-50 dark:from-slate-900 dark:to-slate-950">
       <div className="max-w-2xl mx-auto px-4 py-8">
-        
+
         {/* Animated Mic Icon */}
         <div className="flex justify-center mb-6">
           <motion.div
@@ -187,7 +187,7 @@ export function VoiceInput() {
             </div>
           </motion.div>
         </div>
-        
+
         {/* Title */}
         <div className="text-center mb-8">
           <h1 className="text-2xl font-bold text-slate-800 dark:text-slate-100 mb-2">
@@ -197,7 +197,7 @@ export function VoiceInput() {
             {t('voice.subtitle')}
           </p>
         </div>
-        
+
         {/* Live Transcription Box */}
         <div className="bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-2xl p-6 mb-6 shadow-sm">
           {/* Header */}
@@ -210,7 +210,7 @@ export function VoiceInput() {
               {t('voice.liveBadge')}
             </span>
           </div>
-          
+
           {/* Transcription content */}
           <div className="min-h-[120px] mb-4">
             {transcription ? (
@@ -223,7 +223,7 @@ export function VoiceInput() {
               </p>
             )}
           </div>
-          
+
           {/* Typing indicator */}
           {isRecording && (
             <div className="flex items-center gap-1">
@@ -245,7 +245,7 @@ export function VoiceInput() {
             </div>
           )}
         </div>
-        
+
         {/* Recording Language Section */}
         <div className="mb-6">
           <div className="flex items-center justify-between mb-4">
@@ -254,10 +254,10 @@ export function VoiceInput() {
               <span className="font-semibold text-slate-800 dark:text-slate-200">{t('voice.recordingLanguage')}</span>
             </div>
             <button className="text-sm text-slate-500 dark:text-slate-400 hover:text-slate-700 dark:hover:text-slate-300">
-              More Languages...
+              {t('voice.moreLanguages') || "More Languages..."}
             </button>
           </div>
-          
+
           {/* Language Pills */}
           <div className="flex flex-wrap gap-2">
             {LANGUAGE_OPTIONS.map((lang) => (
@@ -285,7 +285,7 @@ export function VoiceInput() {
             ))}
           </div>
         </div>
-        
+
         {/* Action Buttons */}
         <div className="flex gap-3 mb-6">
           {/* Reset Recording */}
@@ -296,7 +296,7 @@ export function VoiceInput() {
             <RotateCcw className="w-4 h-4" />
             {t('voice.resetRecording')}
           </button>
-          
+
           {/* Confirm & Analyze */}
           <motion.button
             onClick={handleSubmit}
@@ -321,7 +321,7 @@ export function VoiceInput() {
             )}
           </motion.button>
         </div>
-        
+
         {/* Privacy Note */}
         <div className="p-4 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl">
           <div className="flex items-start gap-3">
@@ -334,7 +334,7 @@ export function VoiceInput() {
             </div>
           </div>
         </div>
-        
+
       </div>
     </div>
   );

@@ -35,7 +35,7 @@ const Disclaimer = () => {
 
                     <div className="bg-gray-50 rounded-xl p-4 mb-8 border border-gray-100">
                         <p className="text-gray-600 text-center leading-relaxed">
-                            {t('disclaimer.text_full')}
+                            {t('disclaimer.textFull')}
                         </p>
                     </div>
 
@@ -59,13 +59,13 @@ const Disclaimer = () => {
                     <div className="flex items-center justify-between h-full text-xs md:text-sm">
                         <div className="flex items-center text-gray-500 space-x-2 truncate pr-4">
                             <ShieldExclamationIcon className="w-4 h-4 text-orange-500 shrink-0" />
-                            <span className="truncate">{t('disclaimer.text_short')}</span>
+                            <span className="truncate">{t('disclaimer.textShort')}</span>
                         </div>
                         <button
                             onClick={() => setShowFullInFooter(true)}
                             className="text-primary-600 font-medium hover:text-primary-700 whitespace-nowrap flex items-center"
                         >
-                            {t('disclaimer.read_more')}
+                            {t('disclaimer.readMore')}
                             <ChevronUpIcon className="w-3 h-3 ml-1" />
                         </button>
                     </div>
@@ -82,7 +82,7 @@ const Disclaimer = () => {
                             <ShieldExclamationIcon className="w-6 h-6 text-orange-500 shrink-0 mt-0.5" />
                             <div>
                                 <h4 className="font-bold text-gray-900 mb-1">{t('disclaimer.title')}</h4>
-                                <p className="text-gray-600 text-sm leading-relaxed">{t('disclaimer.text_full')}</p>
+                                <p className="text-gray-600 text-sm leading-relaxed">{t('disclaimer.textFull')}</p>
                             </div>
                         </div>
                     </div>
@@ -93,3 +93,4 @@ const Disclaimer = () => {
 };
 
 export default Disclaimer;
+

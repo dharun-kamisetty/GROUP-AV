@@ -1,3 +1,5 @@
+import i18n from '../../i18n';
+
 export const MOCK_FACILITIES = [
   {
     id: '1',
@@ -85,61 +87,61 @@ export const MOCK_FACILITIES = [
 
 export function analyzeSymptoms(symptoms) {
   const lowerSymptoms = symptoms.toLowerCase();
-  
+
   // Emergency keywords
   const emergencyKeywords = [
     'chest pain', 'heart attack', 'stroke', 'seizure', 'unconscious',
     'severe bleeding', 'breathing difficulty', 'suicide', 'overdose',
     'severe burn', 'paralysis', 'head injury'
   ];
-  
+
   const redFlagKeywords = [
     'blood', 'severe pain', 'high fever', 'vomiting', 'dizziness',
     'confusion', 'weakness', 'numbness', 'shortness of breath'
   ];
-  
-  const emergencyDetected = emergencyKeywords.some(keyword => 
+
+  const emergencyDetected = emergencyKeywords.some(keyword =>
     lowerSymptoms.includes(keyword)
   );
-  
-  const redFlagsFound = redFlagKeywords.filter(keyword => 
+
+  const redFlagsFound = redFlagKeywords.filter(keyword =>
     lowerSymptoms.includes(keyword)
   );
-  
+
   let urgencyScore = 3;
-  let urgencyLevel = 'Low';
-  
+  let urgencyLevel = i18n.t('results.low');
+
   if (emergencyDetected) {
     urgencyScore = 10;
-    urgencyLevel = 'Critical';
+    urgencyLevel = i18n.t('results.critical');
   } else if (redFlagsFound.length >= 3) {
     urgencyScore = 8;
-    urgencyLevel = 'High';
+    urgencyLevel = i18n.t('results.high');
   } else if (redFlagsFound.length >= 1) {
     urgencyScore = 6;
-    urgencyLevel = 'Moderate';
+    urgencyLevel = i18n.t('results.moderate');
   }
-  
+
   const recommendations = [];
-  
+
   if (emergencyDetected) {
-    recommendations.push('⚠️ CALL 108 IMMEDIATELY');
-    recommendations.push('Go to the nearest emergency department');
-    recommendations.push('Do not drive yourself - get emergency transport');
-  } else if (urgencyLevel === 'High') {
-    recommendations.push('Seek medical attention within 2-4 hours');
-    recommendations.push('Visit emergency department or urgent care');
-    recommendations.push('Monitor symptoms closely');
-  } else if (urgencyLevel === 'Moderate') {
-    recommendations.push('Schedule a doctor appointment within 24-48 hours');
-    recommendations.push('Monitor symptoms and seek care if worsening');
-    recommendations.push('Rest and stay hydrated');
+    recommendations.push(i18n.t('results.call108'));
+    recommendations.push(i18n.t('results.nearestER'));
+    recommendations.push(i18n.t('results.noDrive'));
+  } else if (urgencyScore >= 8) {
+    recommendations.push(i18n.t('results.seek2_4'));
+    recommendations.push(i18n.t('results.visitUrgent'));
+    recommendations.push(i18n.t('results.monitorClose'));
+  } else if (urgencyScore >= 6) {
+    recommendations.push(i18n.t('results.schedule24_48'));
+    recommendations.push(i18n.t('results.monitorWorsen'));
+    recommendations.push(i18n.t('results.restHydrate'));
   } else {
-    recommendations.push('Self-care may be appropriate');
-    recommendations.push('Schedule regular doctor visit if symptoms persist');
-    recommendations.push('Maintain good hydration and rest');
+    recommendations.push(i18n.t('results.selfCare'));
+    recommendations.push(i18n.t('results.regularVisit'));
+    recommendations.push(i18n.t('results.restHydrate'));
   }
-  
+
   return {
     urgencyScore,
     urgencyLevel,
@@ -172,20 +174,20 @@ export function getNearbyFacilities(
   specialty
 ) {
   let facilities = [...MOCK_FACILITIES];
-  
+
   // Filter by distance
   facilities = facilities.filter(f => f.distance <= maxDistance);
-  
+
   // Filter by specialty if provided
   if (specialty) {
-    facilities = facilities.filter(f => 
+    facilities = facilities.filter(f =>
       f.specialty?.includes(specialty)
     );
   }
-  
+
   // Sort by distance
   facilities.sort((a, b) => a.distance - b.distance);
-  
+
   return facilities;
 }
 
@@ -195,7 +197,7 @@ export function getUserLocation() {
       reject(new Error('Geolocation is not supported'));
       return;
     }
-    
+
     navigator.geolocation.getCurrentPosition(
       (position) => {
         resolve({

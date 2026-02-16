@@ -1,7 +1,9 @@
 import React, { useState, useEffect } from 'react';
 import { MapPinIcon, PhoneIcon, ClockIcon } from '@heroicons/react/24/outline';
+import { useTranslation } from 'react-i18next';
 
 const Facilities = ({ facilities, loading }) => {
+  const { t } = useTranslation();
   const [searchLocation, setSearchLocation] = useState('');
   const [filteredFacilities, setFilteredFacilities] = useState(facilities);
   const [isLocating, setIsLocating] = useState(false);
@@ -85,8 +87,8 @@ const Facilities = ({ facilities, loading }) => {
       <div className="max-w-6xl mx-auto">
         <div className="card text-center">
           <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary-600 mx-auto mb-4"></div>
-          <h2 className="text-xl font-semibold text-gray-900 mb-2">Finding Facilities</h2>
-          <p className="text-gray-600">Searching for nearby healthcare centers...</p>
+          <h2 className="text-xl font-semibold text-gray-900 mb-2">{t('facilities.loadingTitle')}</h2>
+          <p className="text-gray-600">{t('facilities.loadingDesc')}</p>
         </div>
       </div>
     );
@@ -101,8 +103,8 @@ const Facilities = ({ facilities, loading }) => {
             <MapPinIcon className="w-6 h-6 text-purple-600" />
           </div>
           <div>
-            <h1 className="text-2xl font-bold text-gray-900">Healthcare Facilities</h1>
-            <p className="text-gray-600">Find nearby medical centers and hospitals</p>
+            <h1 className="text-2xl font-bold text-gray-900">{t('facilities.heading')}</h1>
+            <p className="text-gray-600">{t('facilities.subheading')}</p>
           </div>
         </div>
 
@@ -113,7 +115,7 @@ const Facilities = ({ facilities, loading }) => {
               type="text"
               value={searchLocation}
               onChange={(e) => setSearchLocation(e.target.value)}
-              placeholder="Enter city, state (e.g., Mumbai, Maharashtra)"
+              placeholder={t('facilities.searchPlaceholder')}
               className="input-field pr-12"
             />
             <button
@@ -131,7 +133,7 @@ const Facilities = ({ facilities, loading }) => {
             </button>
           </div>
           <button type="submit" className="btn-primary">
-            Search
+            {t('facilities.searchButton')}
           </button>
         </form>
       </div>
@@ -141,10 +143,10 @@ const Facilities = ({ facilities, loading }) => {
         <div className="space-y-4">
           <div className="flex items-center justify-between">
             <h2 className="text-lg font-semibold text-gray-900">
-              Found {filteredFacilities.length} facilities
+              {t('facilities.foundFacilities', { count: filteredFacilities.length })}
             </h2>
             <div className="text-sm text-gray-600">
-              Sorted by distance
+              {t('facilities.sortedBy')}
             </div>
           </div>
 
@@ -159,7 +161,7 @@ const Facilities = ({ facilities, loading }) => {
                     </span>
                     {index === 0 && (
                       <span className="status-badge bg-yellow-100 text-yellow-800">
-                        ⭐ Recommended
+                        {t('facilities.recommended')}
                       </span>
                     )}
                   </div>
@@ -172,7 +174,7 @@ const Facilities = ({ facilities, loading }) => {
                   <div className="flex items-center space-x-4 text-sm text-gray-600">
                     <span className="flex items-center">
                       <ClockIcon className="w-4 h-4 mr-1" />
-                      {facility.distance_km} km away
+                      {facility.distance_km} {t('facilities.kmAway')}
                     </span>
                     <span className="text-blue-600 font-medium">{facility.specialty_match}</span>
                   </div>
@@ -182,14 +184,14 @@ const Facilities = ({ facilities, loading }) => {
                   <div className="text-2xl font-bold text-primary-600">
                     #{index + 1}
                   </div>
-                  <div className="text-sm text-gray-500">Priority</div>
+                  <div className="text-sm text-gray-500">{t('facilities.priority')}</div>
                 </div>
               </div>
 
               {/* Services */}
               {facility.services.length > 0 && (
                 <div className="mb-4">
-                  <h4 className="text-sm font-medium text-gray-700 mb-2">Services Available:</h4>
+                  <h4 className="text-sm font-medium text-gray-700 mb-2">{t('facilities.servicesAvailable')}</h4>
                   <div className="flex flex-wrap gap-2">
                     {facility.services.map((service, serviceIndex) => (
                       <span
@@ -218,16 +220,16 @@ const Facilities = ({ facilities, loading }) => {
                     rel="noopener noreferrer"
                     className="text-blue-600 hover:text-blue-800 text-sm font-medium"
                   >
-                    View on Map →
+                    {t('facilities.viewOnMap')}
                   </a>
                 </div>
 
                 <div className="flex space-x-2">
                   <button className="btn-secondary text-sm">
-                    Save
+                    {t('facilities.saveButton')}
                   </button>
                   <button className="btn-primary text-sm">
-                    Get Directions
+                    {t('facilities.directionsButton')}
                   </button>
                 </div>
               </div>
@@ -237,15 +239,15 @@ const Facilities = ({ facilities, loading }) => {
       ) : (
         <div className="card text-center">
           <MapPinIcon className="w-12 h-12 text-gray-400 mx-auto mb-4" />
-          <h3 className="text-lg font-semibold text-gray-900 mb-2">No Facilities Found</h3>
+          <h3 className="text-lg font-semibold text-gray-900 mb-2">{t('facilities.noFacilitiesTitle')}</h3>
           <p className="text-gray-600 mb-4">
-            Try searching for a different location or check your spelling.
+            {t('facilities.noFacilitiesDesc')}
           </p>
           <button
             onClick={() => setSearchLocation('')}
             className="btn-primary"
           >
-            Clear Search
+            {t('facilities.clearButton')}
           </button>
         </div>
       )}
